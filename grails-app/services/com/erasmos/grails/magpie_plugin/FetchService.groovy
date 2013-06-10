@@ -2,6 +2,9 @@ package com.erasmos.grails.magpie_plugin
 
 class FetchService {
 
+    static transactional = false
+
+
     /**
      * TODO: Use RestBuilder ...
      * @param url
