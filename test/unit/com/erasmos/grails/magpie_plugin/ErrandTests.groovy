@@ -6,11 +6,9 @@ import grails.test.mixin.*
 import org.junit.*
 
 @TestFor(Errand)
+@TestMixin([ValidationTestUtils,DomainTestUtils])
 class ErrandTests {
 
-    static ValidName            = 'Some Errand'
-    static ValidURL             = new URL('http://somewhere.org')
-    static ValidCronExpression  = '0 0 12 1/1 * ? *'
 
     @Test
     void shouldBeInvalidWhenNameIsNull() {
@@ -37,7 +35,7 @@ class ErrandTests {
     @Test
     void shouldBeInvalidWhenNameHasBeenTaken() {
 
-        def existingErrand = generateErrand(ValidName,ValidURL,ValidCronExpression)
+        def existingErrand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression)
 
         def proposedErrand = new Errand(name:existingErrand.name)
         proposedErrand.validate()
@@ -84,25 +82,19 @@ class ErrandTests {
     }
 
 
-    /**
-     * TODO: De-dupe
-     * @param proposedErrand
-     * @param fieldName
-     * @param expectedCode
-     */
-    private void assertFieldError(final Errand proposedErrand, final String fieldName, final String expectedCode) {
-        assertEquals(expectedCode,proposedErrand.errors.getFieldError(fieldName).code)
-    }
+    @Test
+    void shouldBeValid() {
 
-    /**
-     * TODO: De-dupe
-     * @param name
-     * @param url
-     * @param cronExpression
-     * @return
-     */
-    private Errand generateErrand(final String name, final URL url, final String cronExpression){
-        return new Errand(name:name,url:url,cronExpression: cronExpression).save(true)
+        def proposedErrand = new Errand(
+                name:DomainTestUtils.ValidErrandName,
+                url: DomainTestUtils.ValidURL,
+                cronExpression: DomainTestUtils.ValidCronExpression,
+                active: true)
+
+        proposedErrand.validate()
+
+        assertFalse(proposedErrand.hasErrors())
+
     }
 
 }
