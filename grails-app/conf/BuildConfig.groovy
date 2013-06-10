@@ -33,5 +33,10 @@ grails.project.dependency.resolution = {
               ":rest-client-builder:1.0.3") {
             export = false
         }
+
+        // Required for integration tests
+        runtime (":hibernate:$grailsVersion") {
+            export = false
+        }
     }
 }
