@@ -1,4 +1,4 @@
-magpie-grails-plugin
-====================
+The 'Magpie' Grails Plugin
+=============================
 
-This grails plugin offers scheduled fetching of any http content, which is then timestamped and persisted.
+This plugin offers scheduled fetching of any http content, which is then timestamped and persisted.
