@@ -2,3 +2,5 @@ target
 .idea/
 magpie-grails-plugin-grailsPlugins.iml
 magpie-grails-plugin.iml
+out/
+plugin.xml
