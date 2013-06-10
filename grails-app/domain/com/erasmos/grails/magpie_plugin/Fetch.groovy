@@ -2,6 +2,8 @@ package com.erasmos.grails.magpie_plugin
 
 class Fetch {
 
+    static final MaxSizeForContentsInMB = 2
+
     Errand  errand
     Date    dateCreated // Automatically provided
     Integer httpStatusCode // TODO: Have a Fetch Status
@@ -15,6 +17,6 @@ class Fetch {
     }
 
     static mapping = {
-        contents(type: 'TEXT')
+        contents maxSize: 1024 * 1024 * MaxSizeForContentsInMB
     }
 }
