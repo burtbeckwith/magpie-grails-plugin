@@ -1,5 +1,7 @@
 package com.erasmos.grails.magpie_plugin
 
+import java.nio.charset.Charset
+
 class Fetch {
 
     static final MaxSizeForContentsInMB = 2
@@ -9,6 +11,8 @@ class Fetch {
     Integer httpStatusCode // TODO: Have a Fetch Status
     byte[]  contents
 
+    static transients = ['contentsAsString']
+
     static constraints = {
         errand(nullable: false)
         dateCreated(nullable: true)  // Automatically provided by framework
@@ -17,6 +21,17 @@ class Fetch {
     }
 
     static mapping = {
-        contents maxSize: 1024 * 1024 * MaxSizeForContentsInMB
+        contents (maxSize: 1024 * 1024 * MaxSizeForContentsInMB, sqlType: 'blob')
+    }
+
+    /**
+     * Might have to introduce a char-set at some point.
+     * @return
+     */
+    String getContentsAsString(){
+
+        if(contents==null) return null
+
+        return new String(contents)
     }
 }
