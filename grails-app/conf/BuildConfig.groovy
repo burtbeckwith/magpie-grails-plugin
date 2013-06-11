@@ -12,10 +12,12 @@ grails.project.dependency.resolution = {
     legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
     repositories {
         grailsCentral()
+        mavenCentral()
+
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
-        //mavenCentral()
+
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -25,6 +27,8 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         // runtime 'mysql:mysql-connector-java:5.1.21'
+
+        compile('org.apache.httpcomponents:httpclient:4.2.5')
     }
 
     plugins {
@@ -38,5 +42,8 @@ grails.project.dependency.resolution = {
         runtime (":hibernate:$grailsVersion") {
             export = false
         }
+
+
+
     }
 }
