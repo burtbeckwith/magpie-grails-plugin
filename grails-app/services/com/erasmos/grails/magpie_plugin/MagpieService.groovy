@@ -64,7 +64,7 @@ class MagpieService {
             if(log.isErrorEnabled()) {
                 log.error("Invalid proposed Fetch: $proposedFetch. Errors were: ${proposedFetch.errors}")
             }
-            throw new InvalidProposedFetchException(proposedFetch)
+            throw new InvalidProposedFetchException()
         }
 
         return newFetch
