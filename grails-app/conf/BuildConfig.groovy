@@ -45,6 +45,9 @@ grails.project.dependency.resolution = {
 
         compile ":spring-events:1.2"
 
+        compile ":quartz:1.0-RC8"
+
+        compile ":quartz-monitor:0.3-RC2" // TODO: Maybe just for development. (http://localhost:8080/magpie/quartz/list)
 
 
     }

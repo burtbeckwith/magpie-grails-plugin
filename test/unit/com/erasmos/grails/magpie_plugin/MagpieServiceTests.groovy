@@ -10,11 +10,13 @@ import org.junit.*
 @TestMixin([ValidationTestUtils,DomainTestUtils])
 class MagpieServiceTests {
 
+    // TODO: Use the ones in DomainTestUtils
     static final ValidName            = 'Some Errand'
     static final ValidURL             = new URL('http://somewhere.org')
     static final ValidCronExpression  = '0 0 12 1/1 * ? *'
 
     def mockControlFetchService
+    def mockControlJobService
     def mockControlEventService
 
     @Before
@@ -22,6 +24,9 @@ class MagpieServiceTests {
 
         mockControlFetchService = mockFor(FetchService)
         service.fetchService    = mockControlFetchService.createMock()
+
+        mockControlJobService   = mockFor(JobService)
+        service.jobService      = mockControlJobService.createMock()
 
         mockControlEventService = mockFor(EventService)
         service.eventService    = mockControlEventService.createMock()
@@ -100,6 +105,7 @@ class MagpieServiceTests {
 
         assertNull(Errand.findByName(name))
 
+        expectedAddJob(name,url,cronExpression)
         expectedOnNewErrand(name,url,cronExpression)
 
         def newErrand =  service.createNewErrand(name,url,cronExpression)
@@ -112,16 +118,6 @@ class MagpieServiceTests {
         assertTrue(newErrand.active)
     }
 
-    private void expectedOnNewErrand(final String expectedName, final URL expectedURL, final String expectedCronExpression) {
-
-        mockControlEventService.demand.onNewErrand {
-            Errand _errand ->
-                assertEquals(expectedName,_errand.name)
-                assertEquals(expectedURL,_errand.url)
-                assertEquals(expectedCronExpression,_errand.cronExpression)
-        }
-
-    }
 
     @Test
     void fetchErrand(){
@@ -174,6 +170,28 @@ class MagpieServiceTests {
             URL _url ->
                 assertEquals(expectedURL,_url)
                 return returnedResponse
+        }
+    }
+
+    private void expectedOnNewErrand(final String expectedName, final URL expectedURL, final String expectedCronExpression) {
+
+        mockControlEventService.demand.onNewErrand {
+            Errand _errand ->
+                assertEquals(expectedName,_errand.name)
+                assertEquals(expectedURL,_errand.url)
+                assertEquals(expectedCronExpression,_errand.cronExpression)
+        }
+
+    }
+
+
+    private void expectedAddJob(final String expectedName, final URL expectedURL, final String expectedCronExpression) {
+
+        mockControlJobService.demand.addJob {
+            Errand _errand ->
+                assertEquals(expectedName,_errand.name)
+                assertEquals(expectedURL,_errand.url)
+                assertEquals(expectedCronExpression,_errand.cronExpression)
         }
     }
 

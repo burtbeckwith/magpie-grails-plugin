@@ -1,4 +1,11 @@
+import com.erasmos.grails.magpie_plugin.JobService
+import com.erasmos.grails.magpie_plugin.MagpieService
+import org.quartz.Scheduler
+import org.springframework.context.ApplicationContext
+import org.springframework.scheduling.quartz.SchedulerFactoryBean
+
 class MagpieGrailsPlugin {
+
     // the plugin version
     def version = "1.0-SNAPSHOT"
     // the version or versions of Grails the plugin is designed for
@@ -18,6 +25,8 @@ Brief summary/description of the plugin.
 
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/magpie"
+
+    static def final CreateTestErrands = true
 
     // Extra (optional) plugin metadata
 
@@ -49,8 +58,63 @@ Brief summary/description of the plugin.
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
+
+        configScheduler(applicationContext)
+
+        if(CreateTestErrands) createTestErrands(applicationContext)
     }
+
+    /**
+     * We need to inject the ApplicationContext in the Scheduler,
+     * so it's available to each of our dynamically created jobs.
+     *
+     * @param applicationContext
+     */
+    private void configScheduler(final ApplicationContext applicationContext) {
+
+        def scheduler = applicationContext.getBeansOfType(Scheduler).get('quartzScheduler')
+        assert scheduler != null, shout("Where is the Quartz Schedule?")
+
+        scheduler.getContext().put(JobService.ScheduleContextKeyApplicationContext,applicationContext)
+    }
+
+    /**
+     * @param applicationContext
+     */
+    private void createTestErrands(final ApplicationContext applicationContext){
+
+        assert applicationContext != null
+
+        shout("Creating Test Errands ...")
+
+        def magpieService = getMagpieService(applicationContext)
+        assert magpieService != null, shout("Where is the MagpieService?")
+
+        magpieService.createNewErrand(  "[Test] Convert from GBP to CAD",
+                                        generateCurrencyRelatedUrl('GBP','CAD'),
+                                        "0 0 12 1/1 * ? *"
+                                        )
+
+        magpieService.createNewErrand(  "[Test] Convert from GBP to USD",
+                                        generateCurrencyRelatedUrl('GBP','USD'),
+                                        "0 0 0/1 1/1 * ? *"
+        )
+
+    }
+
+    private Scheduler getScheduler(final ApplicationContext applicationContext) {
+        return applicationContext.getBeansOfType(Scheduler).get('quartzScheduler')
+    }
+
+    private MagpieService getMagpieService(final ApplicationContext applicationContext) {
+        return applicationContext.getBeansOfType(MagpieService).get("magpieService")
+
+    }
+
+    private URL generateCurrencyRelatedUrl(final String fromCurrencySymbol, final String toCurrencySymbol){
+        return new URL("http://download.finance.yahoo.com/d/quotes.cvs?s=${fromCurrencySymbol}${toCurrencySymbol}=X&f=sl1d1t1ba&e=.csv")
+    }
+
 
     def onChange = { event ->
         // TODO Implement code that is executed when any artefact that this plugin is
@@ -65,5 +129,16 @@ Brief summary/description of the plugin.
 
     def onShutdown = { event ->
         // TODO Implement code that is executed when the application shuts down (optional)
+    }
+
+    private void shout(final String message){
+
+        def divider =  "@" * 42 + "\n"
+
+        println(divider)
+        println(message)
+        println(divider)
+        println("\n\n")
+
     }
 }

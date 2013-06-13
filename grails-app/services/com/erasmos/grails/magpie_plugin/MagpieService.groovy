@@ -2,8 +2,9 @@ package com.erasmos.grails.magpie_plugin
 
 class MagpieService {
 
-    FetchService fetchService
-    EventService eventService
+    FetchService    fetchService
+    JobService      jobService
+    EventService    eventService
 
     Errand createNewErrand(final String name,final URL url, final String cronExpression) throws InvalidProposedErrandException {
 
@@ -13,11 +14,14 @@ class MagpieService {
 
         def newErrand = validateAndSave(new Errand(name:name,url:url,cronExpression:cronExpression,active:true))
 
+        jobService.addJob(newErrand)
+
         eventService.onNewErrand(newErrand)
 
         return newErrand
 
     }
+
 
     Fetch fetch(final Errand errand){
 

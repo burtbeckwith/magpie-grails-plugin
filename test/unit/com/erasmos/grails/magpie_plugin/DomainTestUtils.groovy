@@ -13,6 +13,15 @@ class DomainTestUtils {
     /**
      *
      * @param name
+     * @return
+     */
+    Errand generateErrand() {
+        return generateErrand(ValidErrandName,ValidURL,ValidCronExpression)
+    }
+
+    /**
+     *
+     * @param name
      * @param url
      * @param cronExpression
      * @return
@@ -23,6 +32,8 @@ class DomainTestUtils {
         assert newErrand != null
         return newErrand
     }
+
+
 
     Errand generateValidErrand(){
         return generateErrand(ValidErrandName,ValidURL,ValidCronExpression)

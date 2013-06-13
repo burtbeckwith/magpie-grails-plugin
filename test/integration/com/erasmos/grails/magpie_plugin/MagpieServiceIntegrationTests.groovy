@@ -10,7 +10,8 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
     static final ValidCronExpression  = '0 0 12 1/1 * ? *'
     static final UseLocalProxy = false
 
-    MagpieService magpieService
+    MagpieService   magpieService
+    JobService      jobService
 
     /**
      * Needed to ensure that the events are being received.
@@ -32,6 +33,8 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
 
         def numberOfNewErrandEventsBefore = getInitialNumberOfSuchEvents(EventService.NewErrandEvent)
 
+        assertFalse(jobService.doesJobExist(name))
+
         def errand = magpieService.createNewErrand(name,url,cronExpression)
 
         assertNotNull(errand)
@@ -45,6 +48,8 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
 
         assertEquals(numberOfNewErrandEventsBefore+1,numberOfNewErrandEventsAfter)
 
+
+        assertTrue(jobService.doesJobExist(name))
 
     }
 
