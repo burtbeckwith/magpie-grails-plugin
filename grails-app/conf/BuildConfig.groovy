@@ -43,6 +43,8 @@ grails.project.dependency.resolution = {
             export = false
         }
 
+        compile ":spring-events:1.2"
+
 
 
     }

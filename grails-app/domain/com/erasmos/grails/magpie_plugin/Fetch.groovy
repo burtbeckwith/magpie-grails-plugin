@@ -1,5 +1,8 @@
 package com.erasmos.grails.magpie_plugin
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder
+import org.apache.commons.lang.builder.ToStringStyle
+
 import java.nio.charset.Charset
 
 class Fetch {
@@ -33,5 +36,9 @@ class Fetch {
         if(contents==null) return null
 
         return new String(contents)
+    }
+
+    String toString(){
+        return ReflectionToStringBuilder.toString(this,ToStringStyle.MULTI_LINE_STYLE)
     }
 }

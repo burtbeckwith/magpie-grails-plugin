@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.params.ConnRoutePNames
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
+import org.springframework.http.HttpStatus
 
 class FetchService {
 
@@ -41,11 +42,33 @@ class FetchService {
 
            if(log.isDebugEnabled()) log.debug("Response: $response")
        }
+       catch (UnknownHostException ex){
+
+           if(log.isErrorEnabled()) log.error("Unknown host for url:$urlAsString")
+
+           response =  generateResponseForUnknownHost()
+       }
        finally {
            httpGet.releaseConnection()
        }
 
         return response
+    }
+
+    /**
+     * TODO: Note sure about this one; perhaps
+     * there shouldn't be a status code at all.
+     *
+     * And maybe we should have a connected boolean ...
+     *
+     * @return
+     */
+    private Response generateResponseForUnknownHost(){
+
+        new Response(httpStatusCode: 503,
+                contentType: null,
+                contents: null)
+
     }
 
 

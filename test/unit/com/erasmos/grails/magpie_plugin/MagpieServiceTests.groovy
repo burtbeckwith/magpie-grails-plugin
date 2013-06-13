@@ -15,6 +15,7 @@ class MagpieServiceTests {
     static final ValidCronExpression  = '0 0 12 1/1 * ? *'
 
     def mockControlFetchService
+    def mockControlEventService
 
     @Before
     void setUp(){
@@ -22,6 +23,8 @@ class MagpieServiceTests {
         mockControlFetchService = mockFor(FetchService)
         service.fetchService    = mockControlFetchService.createMock()
 
+        mockControlEventService = mockFor(EventService)
+        service.eventService    = mockControlEventService.createMock()
     }
 
     @Test
@@ -97,6 +100,8 @@ class MagpieServiceTests {
 
         assertNull(Errand.findByName(name))
 
+        expectedOnNewErrand(name,url,cronExpression)
+
         def newErrand =  service.createNewErrand(name,url,cronExpression)
 
         assertNotNull(newErrand.id)
@@ -105,7 +110,16 @@ class MagpieServiceTests {
         assertEquals(url, newErrand.url)
         assertEquals(cronExpression, newErrand.cronExpression)
         assertTrue(newErrand.active)
+    }
 
+    private void expectedOnNewErrand(final String expectedName, final URL expectedURL, final String expectedCronExpression) {
+
+        mockControlEventService.demand.onNewErrand {
+            Errand _errand ->
+                assertEquals(expectedName,_errand.name)
+                assertEquals(expectedURL,_errand.url)
+                assertEquals(expectedCronExpression,_errand.cronExpression)
+        }
 
     }
 
@@ -116,6 +130,8 @@ class MagpieServiceTests {
 
         def returnedResponse = new FetchService.Response(httpStatusCode: 200, contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)
+
+        expectedOnNewFetch(errand,returnedResponse.httpStatusCode,returnedResponse.contents)
 
         def fetch = service.fetch(errand)
 
@@ -129,6 +145,18 @@ class MagpieServiceTests {
     }
 
 
+    private void expectedOnNewFetch(final Errand expectedErrand, final int expectedHttpStatusCode, final byte[] expectedContents){
+
+        mockControlEventService.demand.onNewFetch {
+            Fetch _fetch ->
+                assertSame(expectedErrand,_fetch.errand)
+                assertEquals(expectedHttpStatusCode, _fetch.httpStatusCode)
+                Assert.assertArrayEquals(expectedContents,_fetch.contents)
+        }
+    }
+
+
+
     @Test(expected = MagpieService.ErrandNotEligibleForFetch)
     void fetchErrandWhenNotEligible(){
 
@@ -139,7 +167,7 @@ class MagpieServiceTests {
 
         service.fetch(errand)
     }
-\
+
     private void expectedFetch(final URL expectedURL, final FetchService.Response returnedResponse){
 
         mockControlFetchService.demand.fetch {

@@ -3,6 +3,7 @@ package com.erasmos.grails.magpie_plugin
 class MagpieService {
 
     FetchService fetchService
+    EventService eventService
 
     Errand createNewErrand(final String name,final URL url, final String cronExpression) throws InvalidProposedErrandException {
 
@@ -10,7 +11,11 @@ class MagpieService {
         assert url              != null
         assert cronExpression   != null
 
-        return validateAndSave(new Errand(name:name,url:url,cronExpression:cronExpression,active:true))
+        def newErrand = validateAndSave(new Errand(name:name,url:url,cronExpression:cronExpression,active:true))
+
+        eventService.onNewErrand(newErrand)
+
+        return newErrand
 
     }
 
@@ -20,7 +25,11 @@ class MagpieService {
 
         if(!errand.active) { throw new ErrandNotEligibleForFetch() }
 
-        return createFetch(errand,fetchService.fetch(errand.url))
+        def newFetch = createFetch(errand,fetchService.fetch(errand.url))
+
+        eventService.onNewFetch(newFetch)
+
+        return newFetch
 
     }
 
@@ -28,13 +37,19 @@ class MagpieService {
 
         assert fetchServiceResponse != null
 
-        return validateAndSave(new Fetch(
+        return validateAndSave(
+                            new Fetch(
                                     errand: errand,
                                     httpStatusCode: fetchServiceResponse.httpStatusCode,
                                     contents: fetchServiceResponse.contents)
-        )
+                        )
     }
 
+    /**
+     *
+     * @param proposedErrand
+     * @return
+     */
     private Errand validateAndSave(final Errand proposedErrand){
 
         def newErrand = proposedErrand.save()
@@ -45,6 +60,8 @@ class MagpieService {
             }
             throw new InvalidProposedErrandException(proposedErrand)
         }
+
+        assert newErrand != null, "We guarantee to return an Errand (if there's no exception)"
 
         return newErrand
 
