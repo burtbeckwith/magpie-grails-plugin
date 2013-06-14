@@ -35,7 +35,7 @@ class ErrandTests {
     @Test
     void shouldBeInvalidWhenNameHasBeenTaken() {
 
-        def existingErrand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression)
+        def existingErrand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType)
 
         def proposedErrand = new Errand(name:existingErrand.name)
         proposedErrand.validate()

@@ -6,13 +6,18 @@ class MagpieService {
     JobService      jobService
     EventService    eventService
 
-    Errand createNewErrand(final String name,final URL url, final String cronExpression) throws InvalidProposedErrandException {
+    Errand createNewErrand(final String name,final URL url, final String cronExpression, final String enforcedContentTypeForRendering) throws InvalidProposedErrandException {
 
         assert name             != null
         assert url              != null
         assert cronExpression   != null
 
-        def newErrand = validateAndSave(new Errand(name:name,url:url,cronExpression:cronExpression,active:true))
+        def newErrand = validateAndSave(
+                new Errand( name:name,
+                            url:url,
+                            cronExpression:cronExpression,
+                            enforcedContentTypeForRendering:enforcedContentTypeForRendering,
+                            active:true))
 
         jobService.addJob(newErrand)
 

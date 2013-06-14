@@ -7,7 +7,9 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
 
 
 
-    static final ValidCronExpression  = '0 0 12 1/1 * ? *'
+    static final ValidCronExpression    = '0 0 12 1/1 * ? *'
+    static final ValidContentType       = 'application/json'
+
     static final UseLocalProxy = false
 
     MagpieService   magpieService
@@ -27,21 +29,23 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
     @Test
     void createNewErrand() {
 
-        def name                = 'Currency (GBP -> USD)'
-        def url                 = generateCurrencyRelatedUrl('GBP','USD')
-        def cronExpression      = ValidCronExpression
+        def name                                = 'Currency (GBP -> USD)'
+        def url                                 = generateCurrencyRelatedUrl('GBP','USD')
+        def cronExpression                      = ValidCronExpression
+        def enforcedContentTypeForRendering     = ValidContentType
 
         def numberOfNewErrandEventsBefore = getInitialNumberOfSuchEvents(EventService.NewErrandEvent)
 
         assertFalse(jobService.doesJobExist(name))
 
-        def errand = magpieService.createNewErrand(name,url,cronExpression)
+        def errand = magpieService.createNewErrand(name,url,cronExpression,enforcedContentTypeForRendering)
 
         assertNotNull(errand)
         assertSame(errand,Errand.read(errand.id))
         assertEquals(name,errand.name)
         assertEquals(url,errand.url)
         assertEquals(cronExpression,errand.cronExpression)
+        assertEquals(enforcedContentTypeForRendering,errand.enforcedContentTypeForRendering)
         assertTrue(errand.active)
 
         def numberOfNewErrandEventsAfter = getNumberOfSuchEventsAfterwards(EventService.NewErrandEvent)

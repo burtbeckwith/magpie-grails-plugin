@@ -28,6 +28,10 @@ class RestfulController {
         render(errand as JSON)
     }
 
+    def showAllFetches() {
+        render(Fetch.all as JSON)
+    }
+
     def showFetchesForErrand(){
 
         def errand = Errand.read(params.id)
@@ -48,18 +52,31 @@ class RestfulController {
             return
         }
 
-        if(log.isDebugEnabled()) log.debug("Fetch content type is: ${fetch.contentType}")
 
-        // TODO: Seems to be a known bug with Grails (when I used the second method
-        // it was looking for the view for showContentsForFetch
-        if(fetch.contentType == 'text/html') {
-            render(contentType:'text/html', text:fetch.contentsAsString)
+        renderContents(fetch)
+
+    }
+
+    /**
+     * TODO: Seems to be a known bug with Grails (when I used the second method
+     * it tries to locate the view)
+     *
+     * @param fetch
+     */
+    private void renderContents(final Fetch fetch) {
+
+        def contentTypeForRendering = fetch.contentTypeForRendering
+
+        if(log.isDebugEnabled()) log.debug("We'll render the Fetch's content as: $contentTypeForRendering")
+
+
+        if(contentTypeForRendering == 'text/html') {
+            render(contentType:contentTypeForRendering, text:fetch.contentsAsString)
         }
         else {
-            response.contentType = fetch.contentType
+            response.contentType = contentTypeForRendering
             response.outputStream << fetch.contents
         }
-
     }
 
     void registerJSONMarshallers(){
@@ -75,11 +92,12 @@ class RestfulController {
         assert errand != null
 
         return [
-                name:               errand.name,
-                url:                errand.url,
-                cronExpression:     errand.cronExpression,
-                active:             errand.active,
-                numberOfFetches:    Fetch.countByErrand(errand),
+                name:                               errand.name,
+                url:                                errand.url,
+                cronExpression:                     errand.cronExpression,
+                enforcedContentTypeForRendering:    errand.enforcedContentTypeForRendering,
+                active:                             errand.active,
+                numberOfFetches:                    Fetch.countByErrand(errand),
                 links: [
                         fetches:    generateLinkToFetchesForErrand(errand.id),
                         allErrands: generateLinkToFetchesForAllErrands()
@@ -93,12 +111,13 @@ class RestfulController {
         assert fetch != null
 
         return [
-            errandId:       fetch.errand.id,
-            errandName:     fetch.errand.name,
-            date:           fetch.dateCreated,
-            httpStatusCode: fetch.httpStatusCode,
-            contentType:    fetch.contentType,
-            contentSize:    fetch.contentsSize,
+            errandId:                               fetch.errand.id,
+            errandName:                             fetch.errand.name,
+            errandEnforcedContentTypeForRendering:  fetch.errand.enforcedContentTypeForRendering,
+            date:                                   fetch.dateCreated,
+            httpStatusCode:                         fetch.httpStatusCode,
+            contentType:                            fetch.contentType,
+            contentSize:                            fetch.contentsSize,
             links: [
                 errand:     generateLinkToToErrand(fetch.errand.id),
                 contents:   generateLinkToFetchContents(fetch.id)

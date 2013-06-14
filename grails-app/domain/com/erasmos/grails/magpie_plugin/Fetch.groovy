@@ -15,7 +15,7 @@ class Fetch {
     String  contentType
     byte[]  contents
 
-    static transients = ['contentsAsString','contentsSize']
+    static transients = ['contentsAsString','contentsSize','contentTypeForRendering']
 
     static constraints = {
         errand(nullable: false)
@@ -40,6 +40,10 @@ class Fetch {
 
     int getContentsSize(){
         return contents ? contents.size() : 0
+    }
+
+    String getContentTypeForRendering(){
+        return (errand.enforcedContentTypeForRendering) ?: contentType
     }
 
     String toString(){

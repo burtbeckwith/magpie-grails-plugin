@@ -11,9 +11,10 @@ import org.junit.*
 class MagpieServiceTests {
 
     // TODO: Use the ones in DomainTestUtils
-    static final ValidName            = 'Some Errand'
-    static final ValidURL             = new URL('http://somewhere.org')
-    static final ValidCronExpression  = '0 0 12 1/1 * ? *'
+    static final ValidName              = 'Some Errand'
+    static final ValidURL               = new URL('http://somewhere.org')
+    static final ValidCronExpression    = '0 0 12 1/1 * ? *'
+    static final ValidContentType       = 'application/json'
 
     def mockControlFetchService
     def mockControlJobService
@@ -35,16 +36,17 @@ class MagpieServiceTests {
     @Test
     void createNewErrandWhenNameAlreadyTaken() {
 
-        def name            = 'Some Web Service'
-        def url             = ValidURL
-        def cronExpression  = ValidCronExpression
+        def name                            = 'Some Web Service'
+        def url                             = ValidURL
+        def cronExpression                  = ValidCronExpression
+        def enforcedContentTypeForRendering = ValidContentType
 
-        generateErrand(name,url,cronExpression)
+        generateErrand(name,url,cronExpression,enforcedContentTypeForRendering)
         assertNotNull(Errand.findByName(name))
 
         try  {
 
-            service.createNewErrand(name,url,cronExpression)
+            service.createNewErrand(name,url,cronExpression,enforcedContentTypeForRendering)
             fail('Expected an InvalidProposedErrandException')
         }
         catch(MagpieService.InvalidProposedErrandException ex){
@@ -70,13 +72,14 @@ class MagpieServiceTests {
     @Test
     void createNewErrandWhenSimpleValidationError() {
 
-        def name            = ' '
-        def url             = ValidURL
-        def cronExpression  = ValidCronExpression
+        def name                            = ' '
+        def url                             = ValidURL
+        def cronExpression                  = ValidCronExpression
+        def enforcedContentTypeForRendering = ValidContentType
 
         try  {
 
-            service.createNewErrand(name,url,cronExpression)
+            service.createNewErrand(name,url,cronExpression,enforcedContentTypeForRendering)
             fail('Expected an InvalidProposedErrandException')
         }
         catch(MagpieService.InvalidProposedErrandException ex){
@@ -99,16 +102,17 @@ class MagpieServiceTests {
     @Test
     void createNewErrandSuccessfully() {
 
-        def name            = 'Some Web Service'
-        def url             = ValidURL
-        def cronExpression  = ValidCronExpression
+        def name                            = 'Some Web Service'
+        def url                             = ValidURL
+        def cronExpression                  = ValidCronExpression
+        def enforcedContentTypeForRendering = ValidContentType
 
         assertNull(Errand.findByName(name))
 
         expectedAddJob(name,url,cronExpression)
         expectedOnNewErrand(name,url,cronExpression)
 
-        def newErrand =  service.createNewErrand(name,url,cronExpression)
+        def newErrand =  service.createNewErrand(name,url,cronExpression,enforcedContentTypeForRendering)
 
         assertNotNull(newErrand.id)
         assertNotNull(Errand.read(newErrand.id))
@@ -122,7 +126,7 @@ class MagpieServiceTests {
     @Test
     void fetchErrand(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression)
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType)
 
         def returnedResponse = new FetchService.Response(httpStatusCode: 200, contentType: "text/html", contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)
@@ -157,7 +161,7 @@ class MagpieServiceTests {
     @Test(expected = MagpieService.ErrandNotEligibleForFetch)
     void fetchErrandWhenNotEligible(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,false)
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
 
         def returnedResponse = new FetchService.Response(httpStatusCode: 200, contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)

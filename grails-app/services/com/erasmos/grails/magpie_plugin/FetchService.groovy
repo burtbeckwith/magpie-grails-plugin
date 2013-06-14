@@ -91,7 +91,7 @@ class FetchService {
         String toString(){
             def stringBuilder = new ReflectionToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             stringBuilder.setExcludeFieldNames(['contents'] as String[])
-            return ReflectionToStringBuilder.toString(this,ToStringStyle.MULTI_LINE_STYLE)
+            return stringBuilder.toString()
         }
     }
 

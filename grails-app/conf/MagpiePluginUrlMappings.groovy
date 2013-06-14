@@ -18,6 +18,11 @@ class MagpiePluginUrlMappings{
             action      = 'showFetchesForErrand'
         }
 
+        "/restfulMagpie/fetches" {
+            controller  = 'restful'
+            action      = 'showAllFetches'
+        }
+
         "/restfulMagpie/fetches/$id/contents" {
             controller  = 'restful'
             action      = 'showContentsForFetch'

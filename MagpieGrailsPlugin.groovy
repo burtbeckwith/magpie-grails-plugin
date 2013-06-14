@@ -97,26 +97,30 @@ Brief summary/description of the plugin.
         errands << magpieService.createNewErrand(
                 "[Test] Convert from GBP to CAD",
                 generateCurrencyRelatedUrl('GBP','CAD'),
-                "0 0 12 1/1 * ? *"
+                "0 0 12 1/1 * ? *",
+                null
                                         )
 
         errands << magpieService.createNewErrand(
                 "[Test] Convert from GBP to USD",
                 generateCurrencyRelatedUrl('GBP','USD'),
-                "0 0 0/1 1/1 * ? *"
+                "0 0 0/1 1/1 * ? *",
+                null
         )
 
         errands << magpieService.createNewErrand(
                 "[Test] Weather Map",
                 new URL("http://media.zenfs.com/en_us/weather/weather.com/eur_unitedkingdom_outlook_en_GB_440_dmy_y.jpg"),
-                "0 0 0/1 1/1 * ? *"
+                "0 0 0/1 1/1 * ? *",
+                null
                                 )
 
 
         errands << magpieService.createNewErrand(
                 "[Test] Tradewinds Real Estate",
                 new URL("http://www.tradewindsrealty.com/iphone/iphone.php?type=basic_listings"),
-                "0 0 0/1 1/1 * ? *"
+                "0 0 0/1 1/1 * ? *",
+                "application/json"
         )
 
         errands.each{magpieService.fetch(it)}
