@@ -12,6 +12,7 @@ class Fetch {
     Errand  errand
     Date    dateCreated // Automatically provided
     Integer httpStatusCode // TODO: Have a Fetch Status
+    String  contentType
     byte[]  contents
 
     static transients = ['contentsAsString','contentsSize']
@@ -20,6 +21,7 @@ class Fetch {
         errand(nullable: false)
         dateCreated(nullable: true)  // Automatically provided by framework
         httpStatusCode(nullable: false)
+        contentType(nullable: true) // Could be legitimately absent
         contents(nullable: true) // Could be legitimately absent
     }
 
@@ -41,6 +43,8 @@ class Fetch {
     }
 
     String toString(){
-        return ReflectionToStringBuilder.toString(this,ToStringStyle.MULTI_LINE_STYLE)
+        def stringBuilder = new ReflectionToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+        stringBuilder.setExcludeFieldNames(['contents'] as String[])
+        return stringBuilder.toString()
     }
 }

@@ -73,7 +73,7 @@ class FetchService {
 
 
     private String extractContentType(final HttpResponse httpResponse){
-        return httpResponse.getHeaders('Content-type').first()
+        return httpResponse.getHeaders('Content-type').first().value
     }
 
     private byte[] extractContents(final HttpResponse httpResponse) {
@@ -89,6 +89,8 @@ class FetchService {
         byte[]  contents
 
         String toString(){
+            def stringBuilder = new ReflectionToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+            stringBuilder.setExcludeFieldNames(['contents'] as String[])
             return ReflectionToStringBuilder.toString(this,ToStringStyle.MULTI_LINE_STYLE)
         }
     }

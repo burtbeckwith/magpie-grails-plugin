@@ -124,7 +124,7 @@ class MagpieServiceTests {
 
         def errand = generateErrand(ValidName,ValidURL,ValidCronExpression)
 
-        def returnedResponse = new FetchService.Response(httpStatusCode: 200, contents: "Hello World".bytes)
+        def returnedResponse = new FetchService.Response(httpStatusCode: 200, contentType: "text/html", contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)
 
         expectedOnNewFetch(errand,returnedResponse.httpStatusCode,returnedResponse.contents)
@@ -133,6 +133,7 @@ class MagpieServiceTests {
 
         assertSame(errand,fetch.errand)
         assertEquals(returnedResponse.httpStatusCode,fetch.httpStatusCode)
+        assertEquals(returnedResponse.contentType,fetch.contentType)
         Assert.assertArrayEquals(returnedResponse.contents,fetch.contents)
 
 

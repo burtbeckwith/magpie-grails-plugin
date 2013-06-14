@@ -40,6 +40,28 @@ class RestfulController {
 
     }
 
+    def showContentsForFetch() {
+
+        def fetch = Fetch.read(params.id)
+        if(!fetch) {
+            render(status: HttpStatus.NOT_FOUND)
+            return
+        }
+
+        if(log.isDebugEnabled()) log.debug("Fetch content type is: ${fetch.contentType}")
+
+        // TODO: Seems to be a known bug with Grails (when I used the second method
+        // it was looking for the view for showContentsForFetch
+        if(fetch.contentType == 'text/html') {
+            render(contentType:'text/html', text:fetch.contentsAsString)
+        }
+        else {
+            response.contentType = fetch.contentType
+            response.outputStream << fetch.contents
+        }
+
+    }
+
     void registerJSONMarshallers(){
 
         int marshallerPriority = 0
@@ -75,9 +97,11 @@ class RestfulController {
             errandName:     fetch.errand.name,
             date:           fetch.dateCreated,
             httpStatusCode: fetch.httpStatusCode,
+            contentType:    fetch.contentType,
             contentSize:    fetch.contentsSize,
             links: [
-                errand:    generateLinkToToErrand(fetch.errand.id)
+                errand:     generateLinkToToErrand(fetch.errand.id),
+                contents:   generateLinkToFetchContents(fetch.id)
                     ]
         ]
     }
@@ -96,6 +120,11 @@ class RestfulController {
     private String generateLinkToToErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}"
+    }
+
+    private String generateLinkToFetchContents(final Long fetchId) {
+        assert fetchId != null
+        return "$serverBaseURL/$RestfulUrlBase/fetches/${fetchId}/contents"
     }
 
     /**

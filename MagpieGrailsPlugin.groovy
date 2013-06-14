@@ -74,7 +74,7 @@ Brief summary/description of the plugin.
      */
     private void configScheduler(final ApplicationContext applicationContext) {
 
-        def scheduler = applicationContext.getBeansOfType(Scheduler).get('quartzScheduler')
+        def scheduler = getScheduler(applicationContext)
         assert scheduler != null, shout("Where is the Quartz Schedule?")
 
         scheduler.getContext().put(JobService.ScheduleContextKeyApplicationContext,applicationContext)
@@ -92,15 +92,34 @@ Brief summary/description of the plugin.
         def magpieService = getMagpieService(applicationContext)
         assert magpieService != null, shout("Where is the MagpieService?")
 
-        magpieService.createNewErrand(  "[Test] Convert from GBP to CAD",
-                                        generateCurrencyRelatedUrl('GBP','CAD'),
-                                        "0 0 12 1/1 * ? *"
+        def errands = []
+
+        errands << magpieService.createNewErrand(
+                "[Test] Convert from GBP to CAD",
+                generateCurrencyRelatedUrl('GBP','CAD'),
+                "0 0 12 1/1 * ? *"
                                         )
 
-        magpieService.createNewErrand(  "[Test] Convert from GBP to USD",
-                                        generateCurrencyRelatedUrl('GBP','USD'),
-                                        "0 0 0/1 1/1 * ? *"
+        errands << magpieService.createNewErrand(
+                "[Test] Convert from GBP to USD",
+                generateCurrencyRelatedUrl('GBP','USD'),
+                "0 0 0/1 1/1 * ? *"
         )
+
+        errands << magpieService.createNewErrand(
+                "[Test] Weather Map",
+                new URL("http://media.zenfs.com/en_us/weather/weather.com/eur_unitedkingdom_outlook_en_GB_440_dmy_y.jpg"),
+                "0 0 0/1 1/1 * ? *"
+                                )
+
+
+        errands << magpieService.createNewErrand(
+                "[Test] Tradewinds Real Estate",
+                new URL("http://www.tradewindsrealty.com/iphone/iphone.php?type=basic_listings"),
+                "0 0 0/1 1/1 * ? *"
+        )
+
+        errands.each{magpieService.fetch(it)}
 
     }
 

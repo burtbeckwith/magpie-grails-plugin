@@ -18,6 +18,11 @@ class MagpiePluginUrlMappings{
             action      = 'showFetchesForErrand'
         }
 
+        "/restfulMagpie/fetches/$id/contents" {
+            controller  = 'restful'
+            action      = 'showContentsForFetch'
+        }
+
 		"/$controller/$action?/$id?"{
 			constraints {
 				// apply constraints here

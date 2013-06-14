@@ -66,6 +66,7 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         def fetch = magpieService.fetch(errand)
 
         assertEquals(200,fetch.httpStatusCode)
+        assertEquals('application/octet-stream',fetch.contentType)
         def contentsAString = fetch.contentsAsString
         assertTrue(contentsAString.contains("GBPCAD=X"))
 
@@ -99,6 +100,7 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         def fetch = magpieService.fetch(errand)
 
         assertEquals(200,fetch.httpStatusCode)
+        assertEquals('application/octet-stream',fetch.contentType)
         def contentsAString = fetch.contentsAsString
         assertTrue(contentsAString.contains("CADGBP=X"))
 

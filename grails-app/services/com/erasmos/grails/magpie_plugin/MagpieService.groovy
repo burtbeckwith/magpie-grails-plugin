@@ -45,6 +45,7 @@ class MagpieService {
                             new Fetch(
                                     errand: errand,
                                     httpStatusCode: fetchServiceResponse.httpStatusCode,
+                                    contentType: fetchServiceResponse.contentType,
                                     contents: fetchServiceResponse.contents)
                         )
     }
