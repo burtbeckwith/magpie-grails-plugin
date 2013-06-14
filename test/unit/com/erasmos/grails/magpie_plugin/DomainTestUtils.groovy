@@ -10,13 +10,17 @@ class DomainTestUtils {
     static final ValidCronExpression    = '0 0 12 1/1 * ? *'
     static final ValidContentType       = 'application/json'
 
+
     /**
      *
-     * @param name
      * @return
      */
     Errand generateErrand() {
         return generateErrand(ValidErrandName,ValidURL,ValidCronExpression,ValidContentType)
+    }
+
+    Errand generateErrand(final String name) {
+        return generateErrand(name,ValidURL,ValidCronExpression,ValidContentType)
     }
 
     /**
@@ -29,16 +33,17 @@ class DomainTestUtils {
      * @return
      */
      Errand generateErrand(final String name, final URL url, final String cronExpression, final String enforcedContentTypeForRendering, final Boolean active = true){
-
-        def newErrand = new Errand(name:name,url:url,cronExpression: cronExpression, enforcedContentTypeForRendering:enforcedContentTypeForRendering, active:active).save(true)
-        assert newErrand != null
-        return newErrand
+        return new Errand(name:name,url:url,cronExpression: cronExpression, enforcedContentTypeForRendering:enforcedContentTypeForRendering, active:active).save(failOnError: true)
     }
 
 
-
-    Errand generateValidErrand(){
-        return generateErrand(ValidErrandName,ValidURL,ValidCronExpression,ValidContentType)
+    Fetch generateFetch(final Errand errand){
+        return generateFetch(errand, new Date())
     }
+
+    Fetch generateFetch(final Errand errand, final Date dateCreated){
+        return new Fetch(errand: errand,dateCreated: dateCreated,httpStatusCode: 200,contents: "Hello World".bytes, contentType: ValidContentType).save(failOnError: true)
+    }
+
 
 }

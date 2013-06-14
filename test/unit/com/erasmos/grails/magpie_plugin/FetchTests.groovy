@@ -14,7 +14,7 @@ class FetchTests {
 
     @Before
     void setUp(){
-        errand = generateValidErrand()
+        errand = generateErrand()
         assertNotNull(errand)
     }
 

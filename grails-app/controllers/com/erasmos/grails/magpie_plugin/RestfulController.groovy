@@ -10,51 +10,78 @@ class RestfulController {
 
     LinkGenerator grailsLinkGenerator
 
-    def index() { }
+    def index() {
+        render(generateIndexMapForJSON() as JSON)
+    }
 
+    /**
+     * TODO: DB style sorting (that would work with unit tests)
+     * @return
+     */
     def showAllErrands() {
-        render(Errand.all as JSON)
+
+        def allErrandsSortedByName = Errand.all.sort {a,b -> a.name <=> b.name}
+
+        render(allErrandsSortedByName as JSON)
     }
 
     def showErrand(){
 
-        def errand = Errand.read(params.id)
-        if(!errand) {
-            render(status: HttpStatus.NOT_FOUND)
-            return
-        }
-
+        def errand = figureRequestedErrand()
+        if(!errand) return
 
         render(errand as JSON)
     }
 
+    /**
+     * TODO: DB style sorting (that would work with unit tests)
+     * @return
+     */
     def showAllFetches() {
-        render(Fetch.all as JSON)
+
+        def allFetchesSortedByReverseDate = Fetch.all.sort {a,b -> b.dateCreated <=> a.dateCreated}
+
+        render(allFetchesSortedByReverseDate as JSON)
     }
 
     def showFetchesForErrand(){
 
-        def errand = Errand.read(params.id)
-        if(!errand) {
-            render(status: HttpStatus.NOT_FOUND)
-            return
-        }
+        def errand = figureRequestedErrand()
+        if(!errand) return
 
-        render(Fetch.findAllByErrand(errand) as JSON)
+        def allFetchesForErrandSortedByReverseDate = Fetch.findAllByErrand(errand,[sort:'dateCreated',order:'desc'])
 
+        render(allFetchesForErrandSortedByReverseDate as JSON)
     }
+
 
     def showContentsForFetch() {
 
-        def fetch = Fetch.read(params.id)
-        if(!fetch) {
-            render(status: HttpStatus.NOT_FOUND)
-            return
-        }
-
+        def fetch = figureRequestedFetch()
+        if(!fetch) return
 
         renderContents(fetch)
+    }
 
+
+    private Errand figureRequestedErrand() {
+
+        def errand = params.id ? Errand.read(params.id) : null
+        if(!errand) {
+            render(status: HttpStatus.NOT_FOUND,text: "Unknown Errand: ${params.id}")
+        }
+
+        return errand
+    }
+
+    private Fetch figureRequestedFetch() {
+
+        def fetch = params.id ? Errand.read(params.id) : null
+        if(!fetch) {
+            render(status: HttpStatus.NOT_FOUND,text: "Unknown Fetch: ${params.id}")
+        }
+
+        return fetch
     }
 
     /**
@@ -92,6 +119,7 @@ class RestfulController {
         assert errand != null
 
         return [
+                id:                                 errand.id,
                 name:                               errand.name,
                 url:                                errand.url,
                 cronExpression:                     errand.cronExpression,
@@ -100,7 +128,7 @@ class RestfulController {
                 numberOfFetches:                    Fetch.countByErrand(errand),
                 links: [
                         fetches:    generateLinkToFetchesForErrand(errand.id),
-                        allErrands: generateLinkToFetchesForAllErrands()
+                        allErrands: generateLinkToAllErrands()
                         ]
 
         ]
@@ -111,10 +139,11 @@ class RestfulController {
         assert fetch != null
 
         return [
+            id:                                     fetch.id,
             errandId:                               fetch.errand.id,
             errandName:                             fetch.errand.name,
             errandEnforcedContentTypeForRendering:  fetch.errand.enforcedContentTypeForRendering,
-            date:                                   fetch.dateCreated,
+            date:                                   fetch.dateCreated.toString(),
             httpStatusCode:                         fetch.httpStatusCode,
             contentType:                            fetch.contentType,
             contentSize:                            fetch.contentsSize,
@@ -126,15 +155,30 @@ class RestfulController {
     }
 
 
+    private Map generateIndexMapForJSON(){
+
+        return [
+                numberOfErrands:    Errand.count(),
+                numberOfFetches:    Fetch.count(),
+                links: [
+                    allErrands:     generateLinkToAllErrands(),
+                    allFetches:     generateLinkToAllFetches()
+                ]
+        ]
+    }
+
     private String generateLinkToFetchesForErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}/fetches"
     }
 
-    private String generateLinkToFetchesForAllErrands() {
+    private String generateLinkToAllErrands() {
         return "$serverBaseURL/$RestfulUrlBase/errands"
     }
 
+    private String generateLinkToAllFetches() {
+        return "$serverBaseURL/$RestfulUrlBase/fetches"
+    }
 
     private String generateLinkToToErrand(final Long errandId) {
         assert errandId != null
@@ -153,4 +197,6 @@ class RestfulController {
     private String getServerBaseURL(){
         return grailsLinkGenerator.serverBaseURL
     }
+
+
 }

@@ -2,6 +2,10 @@ class MagpiePluginUrlMappings{
 
 	static mappings = {
 
+        "/restfulMagpie" {
+            controller  = 'restful'
+            action      = 'index'
+        }
 
         "/restfulMagpie/errands" {
             controller  = 'restful'

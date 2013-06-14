@@ -20,7 +20,7 @@ class Fetch {
     static constraints = {
         errand(nullable: false)
         dateCreated(nullable: true)  // Automatically provided by framework
-        httpStatusCode(nullable: false)
+        httpStatusCode(nullable: false) // TODO: Probably should be nullable, as when can't even connect.
         contentType(nullable: true) // Could be legitimately absent
         contents(nullable: true) // Could be legitimately absent
     }
