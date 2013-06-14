@@ -1,5 +1,6 @@
 import com.erasmos.grails.magpie_plugin.JobService
 import com.erasmos.grails.magpie_plugin.MagpieService
+import com.erasmos.grails.magpie_plugin.RestfulController
 import org.quartz.Scheduler
 import org.springframework.context.ApplicationContext
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
@@ -60,6 +61,7 @@ Brief summary/description of the plugin.
     def doWithApplicationContext = { applicationContext ->
 
         configScheduler(applicationContext)
+        configureRestfulController(applicationContext)
 
         if(CreateTestErrands) createTestErrands(applicationContext)
     }
@@ -140,5 +142,14 @@ Brief summary/description of the plugin.
         println(divider)
         println("\n\n")
 
+    }
+
+    /**
+     * @param applicationContext
+     */
+    private void configureRestfulController(final ApplicationContext applicationContext){
+        def candidates = applicationContext.getBeansOfType(RestfulController)
+        RestfulController restfulController = candidates.get(RestfulController.canonicalName)
+        restfulController.registerJSONMarshallers()
     }
 }

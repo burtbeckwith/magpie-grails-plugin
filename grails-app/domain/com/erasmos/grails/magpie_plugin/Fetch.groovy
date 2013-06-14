@@ -14,7 +14,7 @@ class Fetch {
     Integer httpStatusCode // TODO: Have a Fetch Status
     byte[]  contents
 
-    static transients = ['contentsAsString']
+    static transients = ['contentsAsString','contentsSize']
 
     static constraints = {
         errand(nullable: false)
@@ -32,10 +32,12 @@ class Fetch {
      * @return
      */
     String getContentsAsString(){
-
         if(contents==null) return null
-
         return new String(contents)
+    }
+
+    int getContentsSize(){
+        return contents ? contents.size() : 0
     }
 
     String toString(){
