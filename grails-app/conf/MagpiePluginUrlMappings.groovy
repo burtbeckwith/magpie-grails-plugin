@@ -3,32 +3,32 @@ class MagpiePluginUrlMappings{
 	static mappings = {
 
         "/restfulMagpie" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'index'
         }
 
         "/restfulMagpie/errands" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'showAllErrands'
         }
 
         "/restfulMagpie/errands/$id" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'showErrand'
         }
 
         "/restfulMagpie/errands/$id/fetches" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'showFetchesForErrand'
         }
 
         "/restfulMagpie/fetches" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'showAllFetches'
         }
 
         "/restfulMagpie/fetches/$id/contents" {
-            controller  = 'restful'
+            controller  = 'magpieRestful'
             action      = 'showContentsForFetch'
         }
 

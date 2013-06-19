@@ -10,10 +10,10 @@ import org.junit.*
 /**
  * TODO: Add tests
  */
-@TestFor(RestfulController)
+@TestFor(MagpieRestfulController)
 @TestMixin(DomainTestUtils)
 @Mock([Errand,Fetch])
-class RestfulControllerTests {
+class MagpieRestfulControllerTests {
 
     static String ServerBaseURL     = 'http://localhost:8080/magpie'
     static String ContentTypeJSON   = 'application/json;charset=UTF-8'

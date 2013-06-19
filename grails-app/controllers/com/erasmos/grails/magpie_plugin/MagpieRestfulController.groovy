@@ -4,7 +4,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.http.HttpStatus
 
-class RestfulController {
+class MagpieRestfulController {
 
     static final RestfulUrlBase = 'restfulMagpie'
 
