@@ -36,6 +36,10 @@ class DomainTestUtils {
         return new Errand(name:name,url:url,cronExpression: cronExpression, enforcedContentTypeForRendering:enforcedContentTypeForRendering, active:active).save(failOnError: true)
     }
 
+    Fetch generateFetch(){
+        return generateFetch(generateErrand())
+    }
+
 
     Fetch generateFetch(final Errand errand){
         return generateFetch(errand, new Date())

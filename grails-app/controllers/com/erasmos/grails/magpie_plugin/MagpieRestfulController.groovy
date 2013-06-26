@@ -36,6 +36,14 @@ class MagpieRestfulController {
         render(errand as JSON)
     }
 
+    def showFetch(){
+
+        def fetch = figureRequestedFetch()
+        if(!fetch) return
+
+        render(fetch as JSON)
+    }
+
     /**
      * TODO: DB style sorting (that would work with unit tests)
      * @return
@@ -130,7 +138,7 @@ class MagpieRestfulController {
 
     private Fetch figureRequestedFetch() {
 
-        def fetch = params.id ? Errand.read(params.id) : null
+        def fetch = params.id ? Fetch.read(params.id) : null
         if(!fetch) {
             render(status: HttpStatus.NOT_FOUND,text: "Unknown Fetch: ${params.id}")
         }

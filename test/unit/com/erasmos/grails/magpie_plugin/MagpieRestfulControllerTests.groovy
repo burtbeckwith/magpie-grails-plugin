@@ -83,7 +83,6 @@ class MagpieRestfulControllerTests {
         assertEquals(404,response.status)
         assertEquals("Unknown Errand: 8888", response.text)
 
-
     }
 
     @Test
@@ -408,6 +407,39 @@ class MagpieRestfulControllerTests {
 
     }
 
+
+    @Test
+    void showFetchWhenUnknown(){
+
+        def fetchId = 8888
+        assertFalse(Fetch.exists(fetchId))
+
+        params.id = fetchId as String
+
+        controller.showFetch()
+
+        assertEquals(404,response.status)
+        assertEquals("Unknown Fetch: 8888", response.text)
+
+    }
+
+    @Test
+    void showFetch(){
+
+        def fetch = generateFetch()
+
+        params.id = fetch.id as String
+
+        controller.showFetch()
+
+        assertEquals(200,response.status)
+        assertEquals(ContentTypeJSON,response.contentType)
+        assertNotNull(response.json)
+        assertTrue(response.json instanceof JSONObject)
+        assertIsSavedFetch(response.json)
+
+    }
+
     private void expectFetch(final Errand expectedErrand, final Throwable throwable) {
 
         mockControlMagpieService.demand.fetch {
@@ -452,6 +484,20 @@ class MagpieRestfulControllerTests {
         assertNotNull(jsonObject.get('cronExpression'))
         assertNotNull(jsonObject.get('url'))
         assertNotNull(jsonObject.get('enforcedContentTypeForRendering'))
+
+    }
+
+    private void assertIsSavedFetch(final JSONObject jsonObject) {
+
+        assertNotNull(jsonObject.get('id'))
+        assertNotNull(jsonObject.get('errandId'))
+        assertNotNull(jsonObject.get('errandName'))
+        assertNotNull(jsonObject.get('errandEnforcedContentTypeForRendering'))
+        assertNotNull(jsonObject.get('date'))
+        assertNotNull(jsonObject.get('httpStatusCode'))
+        assertNotNull(jsonObject.get('contentType'))
+        assertNotNull(jsonObject.get('contentSize'))
+        assertNotNull(jsonObject.get('links'))
 
     }
 
