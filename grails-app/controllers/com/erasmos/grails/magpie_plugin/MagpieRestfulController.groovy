@@ -1,8 +1,8 @@
 package com.erasmos.grails.magpie_plugin
 
 import grails.converters.JSON
+import grails.validation.ValidationErrors
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.http.HttpStatus
 import org.springframework.validation.FieldError
 
@@ -70,19 +70,36 @@ class MagpieRestfulController {
 
         try {
 
-            def newErrand = magpieService.createNewErrand(params.name,params.url,params.cronExpression,params.enforcedContentTypeForRendering)
-
-            render(newErrand as JSON)
+            def newErrand = magpieService.createNewErrand(params.name,toUrl(params.url),params.cronExpression,params.enforcedContentTypeForRendering)
+            addLocationHeader(generateLinkToErrand(newErrand.id))
+            render(status: HttpStatus.CREATED.value())
 
         }
         catch (MagpieService.InvalidProposedErrandException ex) {
             response.status = HttpStatus.BAD_REQUEST.value()
-            render(ex.proposedErrand.errors as JSON)
+            render(ex.proposedErrand as JSON)
         }
 
     }
 
+    private URL toUrl(final String rawUrl){
+        if(!rawUrl) return null
 
+        try {
+            return new URL(rawUrl)
+        }
+        catch(MalformedURLException ex){
+            if(log.isErrorEnabled()){
+                log.error("Invalid URL: $rawUrl");
+            }
+            return null
+        }
+    }
+
+
+    private void addLocationHeader(final String url){
+        response.addHeader('Location',url)
+    }
 
 
     private Errand figureRequestedErrand() {
@@ -131,13 +148,27 @@ class MagpieRestfulController {
 
         int marshallerPriority = 0
 
-        [Errand,ValidationErrors,Fetch].each {  Class _class ->
+        [Errand, Fetch, ValidationErrors].each {  Class _class ->
             JSON.registerObjectMarshaller(_class,marshallerPriority) {return asMapForJSON(it)}
         }
     }
 
     private Map asMapForJSON(final Errand errand) {
         assert errand != null
+
+        if(errand.hasErrors()) {
+
+            def fieldErrorsAsMaps = errand.errors.fieldErrors.collect {asMapForJSON(it)}
+
+            return [
+                    name:                               errand.name,
+                    url:                                errand.url,
+                    cronExpression:                     errand.cronExpression,
+                    enforcedContentTypeForRendering:    errand.enforcedContentTypeForRendering,
+                    fieldErrors:                        fieldErrorsAsMaps
+            ]
+        }
+
 
         return [
                 id:                                 errand.id,
@@ -150,9 +181,12 @@ class MagpieRestfulController {
                 links: [
                         fetches:    generateLinkToFetchesForErrand(errand.id),
                         allErrands: generateLinkToAllErrands()
-                        ]
+                ]
 
         ]
+
+
+
     }
 
 
@@ -169,7 +203,7 @@ class MagpieRestfulController {
             contentType:                            fetch.contentType,
             contentSize:                            fetch.contentsSize,
             links: [
-                errand:     generateLinkToToErrand(fetch.errand.id),
+                errand:     generateLinkToErrand(fetch.errand.id),
                 contents:   generateLinkToFetchContents(fetch.id)
                     ]
         ]
@@ -188,22 +222,7 @@ class MagpieRestfulController {
         ]
     }
 
-    /**
-     *
-     * @param validationErrors
-     * @return
-     */
-    private Map asMapForJSON(final ValidationErrors validationErrors) {
 
-        assert validationErrors != null
-
-        def fieldErrorsAsMaps = validationErrors.fieldErrors.collect {asMapForJSON(it)}
-
-        return [
-            fieldErrors: fieldErrorsAsMaps
-        ]
-
-    }
 
     /**
      * TODO: Could render the error code
@@ -235,7 +254,7 @@ class MagpieRestfulController {
         return "$serverBaseURL/$RestfulUrlBase/fetches"
     }
 
-    private String generateLinkToToErrand(final Long errandId) {
+    private String generateLinkToErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}"
     }

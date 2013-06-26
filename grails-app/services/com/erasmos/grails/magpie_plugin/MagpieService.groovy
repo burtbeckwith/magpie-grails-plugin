@@ -8,10 +8,6 @@ class MagpieService {
 
     Errand createNewErrand(final String name,final URL url, final String cronExpression, final String enforcedContentTypeForRendering) throws InvalidProposedErrandException {
 
-        assert name             != null
-        assert url              != null
-        assert cronExpression   != null
-
         def newErrand = validateAndSave(
                 new Errand( name:name,
                             url:url,
