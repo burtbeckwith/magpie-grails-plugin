@@ -46,7 +46,10 @@ class MagpiePluginUrlMappings{
 			}
 		}
 
-		"/"(view:"/index")
+		"/"(view:"/index") {
+            controller  = 'magpieConsole'
+            action      = 'index'
+        }
 		"500"(view:'/error')
 	}
 }

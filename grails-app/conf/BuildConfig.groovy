@@ -34,7 +34,7 @@ grails.project.dependency.resolution = {
     plugins {
         build(":tomcat:$grailsVersion",
               ":release:2.2.1",
-              ":rest-client-builder:1.0.3") {
+              ":rest-client-builder:1.0.3",) {
             export = false
         }
 
@@ -49,6 +49,7 @@ grails.project.dependency.resolution = {
 
         compile ":quartz-monitor:0.3-RC2" // TODO: Maybe just for development. (http://localhost:8080/magpie/quartz/list)
 
+        runtime ":jquery:1.10.0"
 
     }
 }
