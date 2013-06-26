@@ -60,7 +60,11 @@ class MagpieRestfulController {
         def errand = figureRequestedErrand()
         if(!errand) return
 
+        if(log.isDebugEnabled()) log.debug("Request to show all Fetches for Errand #: ${errand.id} ...")
+
         def allFetchesForErrandSortedByReverseDate = Fetch.findAllByErrand(errand,[sort:'dateCreated',order:'desc'])
+
+        if(log.isDebugEnabled()) log.debug("... there are ${allFetchesForErrandSortedByReverseDate.size()} of them.")
 
         render(allFetchesForErrandSortedByReverseDate as JSON)
     }
