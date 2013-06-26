@@ -18,9 +18,13 @@ class MagpieRestfulControllerTests {
     static String ServerBaseURL     = 'http://localhost:8080/magpie'
     static String ContentTypeJSON   = 'application/json;charset=UTF-8'
 
+    def mockControlMagpieService
 
     @Before
     void setUp() {
+
+        mockControlMagpieService    = mockFor(MagpieService)
+        controller.magpieService    = mockControlMagpieService.createMock()
 
         controller.registerJSONMarshallers()
 
@@ -65,6 +69,8 @@ class MagpieRestfulControllerTests {
         assertEquals(2,jsonArray.size())
         assertEquals('Should be sorted by Errand.name',errandTwo.id,jsonArray.get(0)['id'])
         assertEquals(errandOne.id,jsonArray.get(1)['id'])
+
+        jsonArray.each {assertIsErrand(it)}
     }
 
     @Test
@@ -96,6 +102,8 @@ class MagpieRestfulControllerTests {
         assertEquals(ContentTypeJSON,response.contentType)
         assertNotNull(response.json)
         assertTrue(response.json instanceof JSONObject)
+        assertIsErrand(response.json)
+
     }
 
     @Test
@@ -176,7 +184,6 @@ class MagpieRestfulControllerTests {
         controller.showFetchesForErrand()
 
         assertEquals(200,response.status)
-        println(response.contentType)
         assertEquals(ContentTypeJSON,response.contentType)
         assertNotNull(response.json)
         assertTrue(response.json instanceof JSONArray)
@@ -272,6 +279,135 @@ class MagpieRestfulControllerTests {
         assertEquals("http://localhost:8080/magpie/restfulMagpie/fetches".toString(),links['allFetches'])
 
     }
+
+    @Test
+    void createNewErrandWhenInvalidProposedErrandException(){
+
+
+        def name                                = DomainTestUtils.ValidErrandName
+        def url                                 = DomainTestUtils.ValidURL.toExternalForm()
+        def cronExpression                      = DomainTestUtils.ValidCronExpression
+        def enforcedContentTypeForRendering     = DomainTestUtils.ValidContentType
+
+        params.name                            = name
+        params.url                             = url
+        params.cronExpression                  = cronExpression
+        params.enforcedContentTypeForRendering = enforcedContentTypeForRendering
+
+        def proposedErrand = new Errand()
+        proposedErrand.validate() // To generate some fieldErrors
+        def thrown = new MagpieService.InvalidProposedErrandException(proposedErrand)
+        expectCreateNewErrand(name,url,cronExpression,enforcedContentTypeForRendering,thrown)
+
+        controller.createErrand()
+
+        assertEquals(400,response.status)
+        assertEquals(ContentTypeJSON,response.contentType)
+        assertNotNull(response.json)
+        assertTrue(response.json instanceof JSONObject)
+        assertIsErrors(response.json)
+    }
+
+    @Test
+    void validationErrorsAsMapForJSON() {
+
+        def errand = new Errand()
+        errand.validate()
+
+        def errorsAsMap = controller.asMapForJSON(errand.errors)
+
+        assertEquals(1,errorsAsMap.size())
+        def fieldErrors = errorsAsMap['fieldErrors']
+        assertEquals(errand.errors.fieldErrorCount,fieldErrors.size())
+        fieldErrors.each { Map _fieldErrorAsMap ->
+            assertEquals(3,_fieldErrorAsMap.size())
+            assertTrue(_fieldErrorAsMap.containsKey('field'))
+            assertTrue(_fieldErrorAsMap.containsKey('rejectedValue'))
+            assertTrue(_fieldErrorAsMap.containsKey('code'))
+        }
+    }
+
+    private void assertIsErrors(final JSONObject jsonObject) {
+
+        assertEquals(1,jsonObject.size())
+        assertTrue(jsonObject.has('fieldErrors'))
+    }
+
+    @Test
+    void createNewErrand(){
+
+        def name                                = DomainTestUtils.ValidErrandName
+        def url                                 = DomainTestUtils.ValidURL.toExternalForm()
+        def cronExpression                      = DomainTestUtils.ValidCronExpression
+        def enforcedContentTypeForRendering     = DomainTestUtils.ValidContentType
+
+        params.name                            = name
+        params.url                             = url
+        params.cronExpression                  = cronExpression
+        params.enforcedContentTypeForRendering = enforcedContentTypeForRendering
+
+        def returnedNewErrand = generateErrand()
+        expectCreateNewErrand(name,url,cronExpression,enforcedContentTypeForRendering,returnedNewErrand)
+
+        controller.createErrand()
+
+        assertEquals(200,response.status)
+        assertEquals(ContentTypeJSON,response.contentType)
+        assertNotNull(response.json)
+        assertTrue(response.json instanceof JSONObject)
+        assertIsErrand(response.json)
+
+    }
+
+    private void assertIsErrand(final JSONObject jsonObject) {
+
+        assertNotNull(jsonObject.get('id'))
+        assertNotNull(jsonObject.get('name'))
+        assertNotNull(jsonObject.get('active'))
+        assertNotNull(jsonObject.get('numberOfFetches'))
+        assertNotNull(jsonObject.get('cronExpression'))
+        assertNotNull(jsonObject.get('url'))
+        assertNotNull(jsonObject.get('enforcedContentTypeForRendering'))
+
+    }
+
+    private void expectCreateNewErrand(final String expectedName, final String expectedUrl, final String expectedCronExpression, final String expectedEnforcedContentTypeForRendering, final Errand returnedErrand) {
+
+        mockControlMagpieService.demand.createNewErrand {
+            String _name,
+            String _url,
+            String _cronExpression,
+            String _enforcedContentTypeForRendering ->
+
+                assertEquals(expectedName,_name)
+                assertEquals(expectedUrl,_url)
+                assertEquals(expectedCronExpression,_cronExpression)
+                assertEquals(expectedEnforcedContentTypeForRendering,_enforcedContentTypeForRendering)
+
+                return returnedErrand
+
+        }
+    }
+
+
+    private void expectCreateNewErrand(final String expectedName, final String expectedUrl, final String expectedCronExpression, final String expectedEnforcedContentTypeForRendering, final Throwable thrown) {
+
+        mockControlMagpieService.demand.createNewErrand {
+            String _name,
+            String _url,
+            String _cronExpression,
+            String _enforcedContentTypeForRendering ->
+
+                assertEquals(expectedName,_name)
+                assertEquals(expectedUrl,_url)
+                assertEquals(expectedCronExpression,_cronExpression)
+                assertEquals(expectedEnforcedContentTypeForRendering,_enforcedContentTypeForRendering)
+
+                throw thrown
+
+        }
+    }
+
 
     /**
      * I wasn't able to mock the LinkGenerator; no matter, Grails

@@ -9,7 +9,7 @@ class MagpiePluginUrlMappings{
 
         "/restfulMagpie/errands" {
             controller  = 'magpieRestful'
-            action      = 'showAllErrands'
+            action      = [GET: 'showAllErrands', POST:'createNewErrand']
         }
 
         "/restfulMagpie/errands/$id" {

@@ -2,12 +2,15 @@ package com.erasmos.grails.magpie_plugin
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import org.grails.datastore.mapping.validation.ValidationErrors
 import org.springframework.http.HttpStatus
+import org.springframework.validation.FieldError
 
 class MagpieRestfulController {
 
     static final RestfulUrlBase = 'restfulMagpie'
 
+    MagpieService magpieService
     LinkGenerator grailsLinkGenerator
 
     def index() {
@@ -63,6 +66,24 @@ class MagpieRestfulController {
         renderContents(fetch)
     }
 
+    def createErrand() {
+
+        try {
+
+            def newErrand = magpieService.createNewErrand(params.name,params.url,params.cronExpression,params.enforcedContentTypeForRendering)
+
+            render(newErrand as JSON)
+
+        }
+        catch (MagpieService.InvalidProposedErrandException ex) {
+            response.status = HttpStatus.BAD_REQUEST.value()
+            render(ex.proposedErrand.errors as JSON)
+        }
+
+    }
+
+
+
 
     private Errand figureRequestedErrand() {
 
@@ -110,7 +131,7 @@ class MagpieRestfulController {
 
         int marshallerPriority = 0
 
-        [Errand,Fetch].each {  Class _class ->
+        [Errand,ValidationErrors,Fetch].each {  Class _class ->
             JSON.registerObjectMarshaller(_class,marshallerPriority) {return asMapForJSON(it)}
         }
     }
@@ -164,6 +185,40 @@ class MagpieRestfulController {
                     allErrands:     generateLinkToAllErrands(),
                     allFetches:     generateLinkToAllFetches()
                 ]
+        ]
+    }
+
+    /**
+     *
+     * @param validationErrors
+     * @return
+     */
+    private Map asMapForJSON(final ValidationErrors validationErrors) {
+
+        assert validationErrors != null
+
+        def fieldErrorsAsMaps = validationErrors.fieldErrors.collect {asMapForJSON(it)}
+
+        return [
+            fieldErrors: fieldErrorsAsMaps
+        ]
+
+    }
+
+    /**
+     * TODO: Could render the error code
+     *
+     * @param fieldError
+     * @return
+     */
+    private Map asMapForJSON(final FieldError fieldError) {
+
+        assert fieldError != null
+
+        return [
+                field: fieldError.field,
+                rejectedValue: fieldError.rejectedValue,
+                code: fieldError.code
         ]
     }
 
