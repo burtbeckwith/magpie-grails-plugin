@@ -352,8 +352,80 @@ class MagpieRestfulControllerTests {
         assertLocationHeader("http://localhost:8080/magpie/restfulMagpie/errands/${returnedNewErrand.id}")
     }
 
-    private void assertLocationHeader(final String expectedLocationUrl){
-        assertEquals(expectedLocationUrl,response.getHeader('Location'))
+
+    @Test
+    void fetchErrandWhenUnknown(){
+
+        def id = 8888
+        assertFalse(Errand.exists(id))
+
+        params.id = id as String
+
+        controller.fetchErrand()
+
+        assertEquals(404,response.status)
+        assertEquals("Unknown Errand: 8888", response.text)
+
+    }
+
+    @Test
+    void fetchErrandWhenNotEligibleForFetch(){
+
+        def errand = generateErrand()
+
+        def id = errand.id
+
+        params.id = id as String
+
+        expectFetch(errand,new MagpieService.ErrandNotEligibleForFetch())
+
+        controller.fetchErrand()
+
+        assertEquals(401,response.status)
+        assertEquals("Errand #$id is not eligible for fetching.".toString(), response.text)
+
+    }
+
+    @Test
+    void fetchErrand(){
+
+        def errand = generateErrand()
+
+        def id = errand.id
+
+        params.id = id as String
+
+        def returnedNewFetch = new Fetch()
+        returnedNewFetch.id = 42
+        expectFetch(errand,returnedNewFetch)
+
+        controller.fetchErrand()
+
+        assertEquals(201,response.status)
+        assertEquals('text/html;charset=utf-8',response.contentType)
+        assertEquals('',response.text);
+        assertLocationHeader("http://localhost:8080/magpie/restfulMagpie/fetches/${returnedNewFetch.id}")
+
+    }
+
+    private void expectFetch(final Errand expectedErrand, final Throwable throwable) {
+
+        mockControlMagpieService.demand.fetch {
+            Errand _errand ->
+                assertSame(expectedErrand,_errand)
+                throw throwable
+        }
+
+    }
+
+    private void expectFetch(final Errand expectedErrand, final Fetch returnedNewFetch) {
+
+        mockControlMagpieService.demand.fetch {
+            Errand _errand ->
+                assertSame(expectedErrand,_errand)
+                return returnedNewFetch
+        }
+
     }
 
     @Test
@@ -364,6 +436,12 @@ class MagpieRestfulControllerTests {
         assertNull(controller.toUrl(''))
         assertNull(controller.toUrl(null))
     }
+
+    private void assertLocationHeader(final String expectedLocationUrl){
+        assertEquals(expectedLocationUrl,response.getHeader('Location'))
+    }
+
+
 
     private void assertIsSavedErrand(final JSONObject jsonObject) {
 

@@ -28,7 +28,7 @@ Brief summary/description of the plugin.
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/magpie"
 
-    static def final CreateTestErrands = false
+    static def final CreateTestErrands = true
 
     // Extra (optional) plugin metadata
 
@@ -115,14 +115,6 @@ Brief summary/description of the plugin.
                 "0 0 0/1 1/1 * ? *",
                 null
                                 )
-
-
-        errands << magpieService.createNewErrand(
-                "[Test] Tradewinds Real Estate",
-                new URL("http://www.tradewindsrealty.com/iphone/iphone.php?type=basic_listings"),
-                "0 0 0/1 1/1 * ? *",
-                "application/json"
-        )
 
         errands.each{magpieService.fetch(it)}
 

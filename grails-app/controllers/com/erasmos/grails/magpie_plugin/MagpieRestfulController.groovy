@@ -82,6 +82,22 @@ class MagpieRestfulController {
 
     }
 
+    def fetchErrand() {
+
+        def errand = figureRequestedErrand()
+        if(!errand) return
+
+        try {
+
+            def newFetch =  magpieService.fetch(errand)
+            addLocationHeader(generateLinkToFetch(newFetch.id))
+            render(status: HttpStatus.CREATED.value())
+        }
+        catch (MagpieService.ErrandNotEligibleForFetch ex) {
+            render(status: HttpStatus.UNAUTHORIZED.value(),text:"Errand #${errand.id} is not eligible for fetching.")
+        }
+    }
+
     private URL toUrl(final String rawUrl){
         if(!rawUrl) return null
 
@@ -257,6 +273,11 @@ class MagpieRestfulController {
     private String generateLinkToErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}"
+    }
+
+    private String generateLinkToFetch(final Long fetchId) {
+        assert fetchId != null
+        return "$serverBaseURL/$RestfulUrlBase/fetches/${fetchId}"
     }
 
     private String generateLinkToFetchContents(final Long fetchId) {

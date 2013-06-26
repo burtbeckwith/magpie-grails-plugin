@@ -15,12 +15,14 @@ class MagpiePluginUrlMappings{
 
         "/restfulMagpie/errands/$id" {
             controller  = 'magpieRestful'
-            action      = 'showErrand'
+            action      = [GET : 'showErrand']
         }
 
         "/restfulMagpie/errands/$id/fetches" {
             controller  = 'magpieRestful'
-            action      = 'showFetchesForErrand'
+            action      = [
+                            GET: 'showFetchesForErrand',
+                            POST:'fetchErrand']
         }
 
         "/restfulMagpie/fetches" {
@@ -31,6 +33,11 @@ class MagpiePluginUrlMappings{
         "/restfulMagpie/fetches/$id/contents" {
             controller  = 'magpieRestful'
             action      = 'showContentsForFetch'
+        }
+
+        "/restfulMagpie/fetches/$id" {
+            controller  = 'magpieRestful'
+            action      = 'showFetch'
         }
 
 		"/$controller/$action?/$id?"{
