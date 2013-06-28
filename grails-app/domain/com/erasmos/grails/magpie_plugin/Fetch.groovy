@@ -26,6 +26,7 @@ class Fetch {
     }
 
     static mapping = {
+        table 'errand_fetch' // Fetch is a reserved word, at least in Mysql.
         contents (maxSize: 1024 * 1024 * MaxSizeForContentsInMB, sqlType: 'blob')
     }
 

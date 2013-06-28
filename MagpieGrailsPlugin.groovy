@@ -28,7 +28,7 @@ Brief summary/description of the plugin.
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/magpie"
 
-    static def final CreateTestErrands = true
+    static def final CreateTestErrands = false
 
     // Extra (optional) plugin metadata
 
