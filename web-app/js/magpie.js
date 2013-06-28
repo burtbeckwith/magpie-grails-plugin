@@ -5,9 +5,122 @@ var errands = new Array()
 function prepareConsole() {
     $('#errandsDisplay').hide()
     requestErrands()
+
+    $('#createNewErrandSubmitButton').click(function(){requestNewErrand(); return false;})
+}
+
+function requestNewErrand(){
+    log('requestNewErrand')
+
+    var proposedName                            = $('#proposedErrandName').val()
+    var proposedUrl                             = $('#proposedErrandUrl').val()
+    var proposedCronExpression                  = $('#proposedErrandCronExpression').val()
+    var proposedEnforcedContentTypeForRendering = $('#proposedErrandEnforcedContentTypeForRendering').val()
+
+    log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    log("proposedName:" + proposedName)
+    log("proposedUrl:" + proposedUrl)
+    log("proposedCronExpression:" + proposedCronExpression)
+    log("proposedEnforcedContentTypeForRendering:" + proposedEnforcedContentTypeForRendering)
+    log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
+
+    $.ajax({
+        method:'POST',
+        url: '/magpie/restfulMagpie/errands',
+        data: {name:proposedName, url:proposedUrl,cronExpression:proposedCronExpression,enforcedContentTypeForRendering:proposedEnforcedContentTypeForRendering},
+        statusCode:
+        {
+            201: onHavingSuccessfullyCreatedANewErrand,
+            400: onHavingFailedToCreateANewErrandDueToValidationErrors
+            //400: function(){onHavingFailedToCreateANewErrand();}
+        },
+        // error: onHavingFailedToCreateANewErrand,
+        dataType: 'json'
+    });
+
 }
 
 
+function onHavingSuccessfullyCreatedANewErrand(){
+    log('onHavingSuccessfullyCreatedANewErrand')
+
+    $('#proposedErrandFeedback').html('Your new Errand has been successfully created.')
+
+    requestErrands()
+}
+
+function onHavingFailedToCreateANewErrandDueToValidationErrors(xmlHttpRequest){
+
+    log("rawProposedErrand:" + xmlHttpRequest.responseText)
+
+    var proposedErrand = $.parseJSON(xmlHttpRequest.responseText)
+
+    var $proposedErrandFeedback                 = $('#proposedErrandFeedback')
+    var $proposedErrandNameFeedback             = $('#proposedErrandNameFeedback')
+    var $proposedErrandUrlFeedback              = $('#proposedErrandUrlFeedback')
+    var $proposedErrandCronExpressionFeedback   = $('#proposedErrandCronExpressionFeedback')
+
+    if(proposedErrand.fieldErrors){
+        $proposedErrandFeedback.html('There are problems with your proposed Errand; please correct them and re-submit.')
+    }
+
+    $proposedErrandNameFeedback.html('')
+    $proposedErrandUrlFeedback.html('')
+    $proposedErrandCronExpressionFeedback.html('')
+
+    for(x=0;x<proposedErrand.fieldErrors.length;x++){
+
+        var fieldError = proposedErrand.fieldErrors[x]
+        var field           = fieldError.field
+        var rejectedValue   = fieldError.rejectedValue
+        var reason          = fieldError.code
+
+        log("Field Error (" + field + ") Rejected Value (" + rejectedValue + ") Reason (" + reason + ")")
+
+        if(field=='name') {
+
+            var errorMessageForName
+            if(reason=='unique'){
+                errorMessageForName = 'An Errand already exists by this name; check below and please ensure a unique name.'
+            }
+            else if(reason=='blank'){
+                errorMessageForName = 'Please provide a name for your new Errand; please note that it must be unique.'
+            }
+
+            if(!errorMessageForName) errorMessageForName = reason
+
+            $proposedErrandNameFeedback.append(errorMessageForName)
+
+        }
+        else if(field=='url') {
+
+            var errorMessageForUrl
+            if(reason=='nullable'){
+                errorMessageForUrl = 'Please provide a URL that this Errand will Fetch.'
+            }
+
+            if(!errorMessageForUrl) errorMessageForUrl = reason
+
+            $proposedErrandUrlFeedback.append(errorMessageForUrl)
+        }
+        else if(field=='cronExpression') {
+
+            var errorMessageForCronExpression
+            if(reason=='blank'){
+                errorMessageForCronExpression = 'Please provide a Cron expression, to schedule the Fetch.'
+            }
+
+            if(!errorMessageForCronExpression) errorMessageForCronExpression = reason
+
+            $proposedErrandCronExpressionFeedback.append(errorMessageForCronExpression)
+        }
+
+
+    }
+
+    log('onHavingFailedToCreateANewErrand:' + proposedErrand.fieldErrors)
+}
 
 function requestErrands() {
 
@@ -37,7 +150,9 @@ function requestFetchesForErrands() {
 
 function populateErrandsDisplay(){
 
-    var $errands = $('#errands')
+    var $errandRows = $('#errandRows')
+
+    $errandRows.html('')
 
     for(var x=0; x < errands.length;x++){
         var errand = errands[x]
@@ -79,7 +194,7 @@ function populateErrandsDisplay(){
         errandRow += "</tr>"
 
 
-        $errands.append(errandRow)
+        $errandRows.append(errandRow)
 
     }
 
