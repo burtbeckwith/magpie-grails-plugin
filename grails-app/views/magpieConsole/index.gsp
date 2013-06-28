@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-    <title>App Report Card ~ Restful Demo</title>
+    <title>Magpie Console</title>
 
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'magpie.css')}" />
 
@@ -36,14 +36,14 @@
                     Name:
                   </td>
                   <td valign='top' >
-                    <input id="proposedErrandName" type="text" name="name" size="40" value='[Test] Convert from CAD to GBP'>
+                    <g:textField id='proposedErrandName' name='name'/>
                     <div id="proposedErrandNameFeedback"></div>
                   </td>
                   <td valign='top' bgcolor="#ffb6c1">
                       Url:
                   </td>
                   <td valign='top' >
-                      <input id="proposedErrandUrl" type="text" name="url" size="100" value='http://download.finance.yahoo.com/d/quotes.cvs?s=CADGBP=X&f=sl1d1t1ba&e=.csv'>
+                      <g:textField id='proposedErrandUrl' name='url'/>
                       <div id="proposedErrandUrlFeedback"></div>
                    </td>
               </tr>
@@ -52,7 +52,7 @@
                       Cron:
                   </td>
                   <td valign='top' >
-                      <input id="proposedErrandCronExpression" type="text" name="cronExpression" size="40" value='0 0 12 1/1 * ? *'>
+                      <g:textField id='proposedErrandCronExpression' name='cronExpression'/>
                       <div id="proposedErrandCronExpressionFeedback"></div>
                   </td>
 
@@ -60,7 +60,7 @@
                       Content-type:
                   </td>
                   <td valign='top' >
-                      <input id="proposedErrandEnforcedContentTypeForRendering" type="text" name="enforcedContentTypeForRendering" size="40"  value='text/csv'>
+                      <g:textField id='proposedErrandEnforcedContentTypeForRendering' name='enforcedContentTypeForRendering'/>
                   </td>
               </tr>
               <tr>

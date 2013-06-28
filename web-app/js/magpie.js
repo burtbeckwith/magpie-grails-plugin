@@ -1,4 +1,5 @@
 
+var baseUrl = 'restfulMagpie'
 
 var errands = new Array()
 
@@ -27,7 +28,7 @@ function requestNewErrand(){
 
     $.ajax({
         method:'POST',
-        url: '/magpie/restfulMagpie/errands',
+        url: baseUrl + '/errands',
         data: {name:proposedName, url:proposedUrl,cronExpression:proposedCronExpression,enforcedContentTypeForRendering:proposedEnforcedContentTypeForRendering},
         statusCode:
         {
@@ -125,7 +126,7 @@ function onHavingFailedToCreateANewErrandDueToValidationErrors(xmlHttpRequest){
 function requestErrands() {
 
     $.ajax({
-        url: '/magpie/restfulMagpie/errands',
+        url: baseUrl + '/errands',
         data: null,
         success: onReceivingErrands,
         dataType: 'json'
@@ -219,7 +220,7 @@ function requestNewFetchForErrand(errandId) {
 
     log('requestNewFetchForErrand ...!' + errandId)
 
-    var url = '/magpie/restfulMagpie/errands/' + errandId + '/fetches'
+    var url = baseUrl + '/errands/' + errandId + '/fetches'
 
     $.ajax({
         method:'POST',
@@ -258,7 +259,7 @@ function requestFetchesForErrand(errandId) {
 
     log('requestFetchesForErrand ....' + errandId)
 
-     var url = '/magpie/restfulMagpie/errands/' + errandId + '/fetches'
+     var url = baseUrl + '/errands/' + errandId + '/fetches'
 
     $.ajax({
         url: url,
@@ -303,7 +304,7 @@ function onReceivingFetchesForErrand(errandId,data){
         var contentSize     = fetch.contentSize
 
 
-        var urlForContents = '/magpie/restfulMagpie/fetches/' + fetchId + '/contents'
+        var urlForContents = baseUrl +  '/fetches/' + fetchId + '/contents'
         var targetWindow = '_fetchContentsForFetch' + fetchId
         var contentTypeDisplay = (contentSize> 0) ? "<a target='" + targetWindow + "' href='" + urlForContents + "'>" + contentType + "</a>" : contentType
 

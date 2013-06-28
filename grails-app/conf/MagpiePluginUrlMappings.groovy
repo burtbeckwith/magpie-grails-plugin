@@ -46,7 +46,7 @@ class MagpiePluginUrlMappings{
 			}
 		}
 
-		"/"(view:"/index") {
+		"/magpieConsole" {
             controller  = 'magpieConsole'
             action      = 'index'
         }
