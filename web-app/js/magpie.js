@@ -159,6 +159,18 @@ function populateErrandsDisplay(){
 
         var errandRow = ''
 
+        var errandHeaderRow = ''
+
+        errandHeaderRow += "<tr bgcolor='lightyellow'>"
+        errandHeaderRow += "<td width='30%'>Name</td>"
+        errandHeaderRow += "<td width='10%'>Url</td>"
+        errandHeaderRow += "<td width='20%'>Cron</td>"
+        errandHeaderRow += "<td width='20%'>Enforced Content Type</td>"
+        errandHeaderRow += "<td width='10%'>Active</td>"
+        errandHeaderRow += "</tr>"
+
+        errandRow += errandHeaderRow
+
         var errandRowId = "errandRow_" + errand.id
 
         errandRow += "<tr class='errandRow' id='#" + errandRowId + "'>"
@@ -290,10 +302,15 @@ function onReceivingFetchesForErrand(errandId,data){
         var contentType     = fetch.contentType
         var contentSize     = fetch.contentSize
 
+
+        var urlForContents = '/magpie/restfulMagpie/fetches/' + fetchId + '/contents'
+        var targetWindow = '_fetchContentsForFetch' + fetchId
+        var contentTypeDisplay = (contentSize> 0) ? "<a target='" + targetWindow + "' href='" + urlForContents + "'>" + contentType + "</a>" : contentType
+
         errandFetchesDisplay += "<tr class='fetchDataRow'>"
         errandFetchesDisplay += '<td>' + date + '</td>'
         errandFetchesDisplay += '<td>' + httpStatusCode + '</td>'
-        errandFetchesDisplay += '<td>' + contentType + '</td>'
+        errandFetchesDisplay += '<td>' + contentTypeDisplay + '</td>'
         errandFetchesDisplay += '<td>' + contentSize + '</td>'
         errandFetchesDisplay += '</tr>'
 
