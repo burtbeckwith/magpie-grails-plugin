@@ -8,7 +8,7 @@ class MagpieService {
     JobService      jobService
     EventService    eventService
 
-    Errand createNewErrand(final String name,final URL url, final String cronExpression, final String enforcedContentTypeForRendering) throws InvalidProposedErrandException {
+    Errand createNewErrand(final String name,final URL url, final String cronExpression, final String enforcedContentTypeForRendering = null) throws InvalidProposedErrandException {
 
         def newErrand = validateAndSave(
                 new Errand( name:name,
@@ -37,6 +37,16 @@ class MagpieService {
         eventService.onNewFetch(newFetch)
 
         return newFetch
+
+    }
+
+
+
+    Errand findErrandByName(final String name){
+
+        assert name != null
+
+        return Errand.findByName(name)
 
     }
 

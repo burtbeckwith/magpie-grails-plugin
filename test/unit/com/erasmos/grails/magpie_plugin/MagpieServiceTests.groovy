@@ -145,6 +145,29 @@ class MagpieServiceTests {
         assertEquals(1, Fetch.count)
     }
 
+    @Test
+    void findErrandByNameWhenItDoesNotExist(){
+
+        def name = 'My Errand'
+        assertNull(Errand.findByName(name))
+
+        def errand = service.findErrandByName(name)
+
+        assertNull(errand)
+
+    }
+
+    @Test
+    void findErrandByName(){
+
+        def name = 'My Errand'
+        def existingErrand = generateErrand(name)
+
+        def errand = service.findErrandByName(name)
+
+        assertSame(existingErrand,errand)
+
+    }
 
     private void expectedOnNewFetch(final Errand expectedErrand, final int expectedHttpStatusCode, final byte[] expectedContents){
 
