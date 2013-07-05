@@ -40,16 +40,9 @@ class MagpiePluginUrlMappings{
             action      = 'showFetch'
         }
 
-		"/$controller/$action?/$id?"{
-			constraints {
-				// apply constraints here
-			}
-		}
-
 		"/magpieConsole" {
             controller  = 'magpieConsole'
             action      = 'index'
         }
-		"500"(view:'/error')
 	}
 }

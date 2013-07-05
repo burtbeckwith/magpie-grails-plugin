@@ -13,11 +13,13 @@ import org.springframework.context.ApplicationContext
  */
 class JobService {
 
-    static final ScheduleContextKeyApplicationContext = 'applicationContext'
+    static final String ScheduleContextKeyApplicationContext = 'applicationContext'
 
-    private static final JobGroupName           = 'Errands'
-    private static final JobDataMapKeyErrandId  = 'ErrandId'
-    private static final BeanNameMagpieService  = 'magpieService'
+    static transactional = false
+
+    private static final String JobGroupName           = 'Errands'
+    private static final String JobDataMapKeyErrandId  = 'ErrandId'
+    private static final String BeanNameMagpieService  = 'magpieService'
 
     def quartzScheduler
 

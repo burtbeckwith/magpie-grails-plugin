@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationListener
  */
 class DefaultEventListenerService implements ApplicationListener<EventService.MagpieEvent>{
 
+    static transactional = false
+
     private Map<Class<EventService.MagpieEvent>,Integer> eventCounts = [:]
 
     /**

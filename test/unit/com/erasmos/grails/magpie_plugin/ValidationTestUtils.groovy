@@ -9,7 +9,7 @@ class ValidationTestUtils {
      * @param fieldName
      * @param expectedCode
      */
-    void assertFieldError(final def proposedDomainObject, final String fieldName, final String expectedCode) {
+    void assertFieldError(final proposedDomainObject, final String fieldName, final String expectedCode) {
         assert expectedCode == proposedDomainObject.errors.getFieldError(fieldName).code
     }
 }

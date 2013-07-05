@@ -19,9 +19,9 @@ class Fetch {
     static transients = ['contentsAsString','contentsSize','contentTypeForRendering']
 
     static constraints = {
-        errand(nullable: false)
+        errand()
         dateCreated(nullable: true)  // Automatically provided by framework
-        httpStatusCode(nullable: false)
+        httpStatusCode()
         contentType(nullable: true) // Could be legitimately absent
         contents(nullable: true) // Could be legitimately absent
     }

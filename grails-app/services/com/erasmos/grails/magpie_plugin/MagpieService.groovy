@@ -5,8 +5,6 @@ package com.erasmos.grails.magpie_plugin
  */
 class MagpieService {
 
-    static transactional = true
-
     FetchService    fetchService
     JobService      jobService
     EventService    eventService

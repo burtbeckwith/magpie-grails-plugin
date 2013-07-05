@@ -4,3 +4,5 @@ magpie-grails-plugin-grailsPlugins.iml
 magpie-grails-plugin.iml
 out/
 plugin.xml
+/web-app/WEB-INF
+/grails-magpie-*.zip

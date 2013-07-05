@@ -21,11 +21,11 @@ class Errand {
     Boolean active
 
     static constraints = {
-        name(nullable: false, blank: false, unique: true)
-        url(nullable: false)
-        cronExpression(nullable: false, blank: false)
+        name(blank: false, unique: true)
+        url()
+        cronExpression(blank: false)
         enforcedContentTypeForRendering(nullable: true)
-        active(nullable: false)
+        active()
     }
 
     String toString(){

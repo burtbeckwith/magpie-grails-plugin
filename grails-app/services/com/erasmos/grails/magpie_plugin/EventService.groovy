@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationEvent
  */
 class EventService {
 
+    static transactional = false
+
     /**
      *
      * @param fetch
