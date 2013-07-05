@@ -192,6 +192,95 @@ class MagpieServiceTests {
         service.fetch(errand)
     }
 
+    @Test
+    void deactivateErrandWhenNotActive(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+
+        def verdict = service.deactivate(errand)
+
+        assertTrue(verdict)
+        assertFalse(errand.active)
+
+    }
+
+    @Test
+    void deactivateErrandWhenWeFailToSaveIt(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,true)
+
+        def savedErrand = null
+        expectValidateAndSave(errand,savedErrand)
+
+        def verdict = service.deactivate(errand)
+
+        assertFalse(verdict)
+        assertTrue(errand.active)
+
+    }
+
+
+    @Test
+    void deactivateErrand(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+
+        def verdict = service.activate(errand)
+
+        assertTrue(verdict)
+        assertTrue(errand.active)
+
+    }
+
+
+    @Test
+    void activateErrandWhenActive(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,true)
+
+        def verdict = service.activate(errand)
+
+        assertTrue(verdict)
+        assertTrue(errand.active)
+
+    }
+
+    @Test
+    void activateErrandWhenWeFailToSaveIt(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+
+        def savedErrand = null
+        expectValidateAndSave(errand,savedErrand)
+
+        def verdict = service.activate(errand)
+
+        assertFalse(verdict)
+        assertFalse(errand.active)
+
+    }
+
+    @Test
+    void activateErrand(){
+
+        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+
+        def verdict = service.activate(errand)
+
+        assertTrue(verdict)
+        assertTrue(errand.active)
+
+    }
+
+
+    private void expectValidateAndSave(final Errand expectedErrand, final Errand returnedErrand){
+        service.metaClass.validateAndSave {
+            Errand _errand ->
+                assertSame(expectedErrand,_errand)
+                return returnedErrand
+        }
+    }
+
     private void expectedFetch(final URL expectedURL, final FetchService.Response returnedResponse){
 
         mockControlFetchService.demand.fetch {

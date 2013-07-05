@@ -50,6 +50,59 @@ class MagpieService {
 
     }
 
+    /**
+     *
+     * @param errand
+     * @return Whether it was successful or not.
+     */
+    boolean deactivate(final Errand errand){
+
+        assert errand != null
+
+        if(log.isDebugEnabled()) log.debug("Deactivating Errand:$errand ...")
+
+        return setActive(errand,false)
+    }
+
+    /**
+     *
+     * @param errand
+     * @return Whether it was successful or not.
+     */
+    boolean activate(final Errand errand){
+
+        assert errand != null
+
+        if(log.isDebugEnabled()) log.debug("Activating Errand:$errand ...")
+
+        return setActive(errand,true)
+    }
+
+    boolean setActive(final Errand errand, final boolean active){
+
+        assert errand != null
+
+
+        if(errand.active==active){
+            if(log.isDebugEnabled()) log.debug("... already set")
+            return true
+        }
+
+        errand.active = active
+
+        if(!validateAndSave(errand)){
+            if(log.isErrorEnabled()) log.error("Failed to update Errand: $errand; errors were: ${errand.errors}")
+            errand.active = !active
+            return false
+        }
+
+        if(log.isDebugEnabled()) log.debug("... successful.")
+
+        return true
+    }
+
+
+
     private Fetch createFetch(final Errand errand, final FetchService.Response fetchServiceResponse) {
 
         assert fetchServiceResponse != null
@@ -70,18 +123,18 @@ class MagpieService {
      */
     private Errand validateAndSave(final Errand proposedErrand){
 
-        def newErrand = proposedErrand.save()
+        def savedErrand = proposedErrand.save()
 
-        if(!newErrand){
+        if(!savedErrand){
             if(log.isErrorEnabled()) {
                 log.error("Invalid proposed Errand: $proposedErrand. Errors were: ${proposedErrand.errors}")
             }
             throw new InvalidProposedErrandException(proposedErrand)
         }
 
-        assert newErrand != null, "We guarantee to return an Errand (if there's no exception)"
+        assert savedErrand != null, "We guarantee to return an Errand (if there's no exception)"
 
-        return newErrand
+        return savedErrand
 
     }
 

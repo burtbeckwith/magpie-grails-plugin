@@ -35,10 +35,17 @@ The 'external' interface is the [MagpieService](https://github.com/erasmos/magpi
      Fetch fetch(final Errand errand) throws ErrandNotEligibleForFetch     
      
 
-
 **Find an Errand By Name**
 
        Errand findErrandByName(final String name)
+ 
+**Activate an Errand**
+
+       boolean activate(final Errand errand)
+       
+**Deactivate an Errand**
+
+	   boolean deactivate(final Errand errand) 
  
  
 Internally, there are three other Services - which you might find useful.
