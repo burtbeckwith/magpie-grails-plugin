@@ -15,7 +15,7 @@ class FetchService {
 
     static transactional = false
 
-    def useLocalProxy = false
+    def useLocalProxy = false  // TODO: Don't need this.
 
     FetchService.Response fetch(final URL url){
 

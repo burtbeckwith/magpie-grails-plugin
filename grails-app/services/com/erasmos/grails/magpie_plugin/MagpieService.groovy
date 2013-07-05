@@ -26,7 +26,7 @@ class MagpieService {
     }
 
 
-    Fetch fetch(final Errand errand){
+    Fetch fetch(final Errand errand) throws ErrandNotEligibleForFetch{
 
         assert errand != null
 
@@ -106,7 +106,7 @@ class MagpieService {
 
     }
 
-    public static class InvalidProposedErrandException extends Exception {
+    static class InvalidProposedErrandException extends Exception {
         Errand proposedErrand
 
         InvalidProposedErrandException(final Errand proposedErrand){
@@ -114,7 +114,7 @@ class MagpieService {
         }
     }
 
-    public static class InvalidProposedFetchException extends Exception {
+    static class InvalidProposedFetchException extends Exception {
         Fetch proposedFetch
 
         InvalidProposedFetchException(final Errand proposedErrand){
@@ -123,7 +123,7 @@ class MagpieService {
     }
 
 
-    public static class ErrandNotEligibleForFetch extends Exception {
+    static class ErrandNotEligibleForFetch extends Exception {
 
     }
 

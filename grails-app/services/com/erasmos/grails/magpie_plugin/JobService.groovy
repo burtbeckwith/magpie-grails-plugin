@@ -3,6 +3,9 @@ package com.erasmos.grails.magpie_plugin
 import org.quartz.*
 import org.springframework.context.ApplicationContext
 
+/**
+ * A thin wrapper for Quartz;
+ */
 class JobService {
 
     public static final ScheduleContextKeyApplicationContext = 'applicationContext'
