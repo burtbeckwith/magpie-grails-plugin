@@ -325,8 +325,8 @@ function onReceivingFetchesForErrand(errandId,data){
 }
 
 /**
- * TODO: remember IE8
+ * Intended for development only; uncomment to use.
  */
 function log(message) {
-    console.log(message)
+    //console.log(message)
 }

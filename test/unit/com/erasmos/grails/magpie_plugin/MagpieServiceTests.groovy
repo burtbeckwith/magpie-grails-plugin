@@ -1,20 +1,16 @@
 package com.erasmos.grails.magpie_plugin
 
-
-
-import grails.test.mixin.*
-import org.junit.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 
 @TestFor(MagpieService)
 @Mock([Errand,Fetch])
 @TestMixin([ValidationTestUtils,DomainTestUtils])
 class MagpieServiceTests {
-
-    // TODO: Use the ones in DomainTestUtils
-    static final ValidName              = 'Some Errand'
-    static final ValidURL               = new URL('http://somewhere.org')
-    static final ValidCronExpression    = '0 0 12 1/1 * ? *'
-    static final ValidContentType       = 'application/json'
 
     def mockControlFetchService
     def mockControlJobService
@@ -37,9 +33,9 @@ class MagpieServiceTests {
     void createNewErrandWhenNameAlreadyTaken() {
 
         def name                            = 'Some Web Service'
-        def url                             = ValidURL
-        def cronExpression                  = ValidCronExpression
-        def enforcedContentTypeForRendering = ValidContentType
+        def url                             = DomainTestUtils.ValidURL
+        def cronExpression                  = DomainTestUtils.ValidCronExpression
+        def enforcedContentTypeForRendering = DomainTestUtils.ValidContentType
 
         generateErrand(name,url,cronExpression,enforcedContentTypeForRendering)
         assertNotNull(Errand.findByName(name))
@@ -66,16 +62,15 @@ class MagpieServiceTests {
     }
 
     /**
-     * TODO: Complete validation testing will be found in
-     * ErrandTests.
+     * Complete validation testing can be found in ErrandTests.
      */
     @Test
     void createNewErrandWhenSimpleValidationError() {
 
         def name                            = ' '
-        def url                             = ValidURL
-        def cronExpression                  = ValidCronExpression
-        def enforcedContentTypeForRendering = ValidContentType
+        def url                             = DomainTestUtils.ValidURL
+        def cronExpression                  = DomainTestUtils.ValidCronExpression
+        def enforcedContentTypeForRendering = DomainTestUtils.ValidContentType
 
         try  {
 
@@ -103,9 +98,9 @@ class MagpieServiceTests {
     void createNewErrandSuccessfully() {
 
         def name                            = 'Some Web Service'
-        def url                             = ValidURL
-        def cronExpression                  = ValidCronExpression
-        def enforcedContentTypeForRendering = ValidContentType
+        def url                             = DomainTestUtils.ValidURL
+        def cronExpression                  = DomainTestUtils.ValidCronExpression
+        def enforcedContentTypeForRendering = DomainTestUtils.ValidContentType
 
         assertNull(Errand.findByName(name))
 
@@ -126,7 +121,7 @@ class MagpieServiceTests {
     @Test
     void fetchErrand(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType)
 
         def returnedResponse = new FetchService.Response(httpStatusCode: 200, contentType: "text/html", contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)
@@ -184,7 +179,7 @@ class MagpieServiceTests {
     @Test(expected = MagpieService.ErrandNotEligibleForFetch)
     void fetchErrandWhenNotEligible(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,false)
 
         def returnedResponse = new FetchService.Response(httpStatusCode: 200, contents: "Hello World".bytes)
         expectedFetch(errand.url,returnedResponse)
@@ -195,7 +190,7 @@ class MagpieServiceTests {
     @Test
     void deactivateErrandWhenNotActive(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,false)
 
         def verdict = service.deactivate(errand)
 
@@ -207,7 +202,7 @@ class MagpieServiceTests {
     @Test
     void deactivateErrandWhenWeFailToSaveIt(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,true)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,true)
 
         def savedErrand = null
         expectValidateAndSave(errand,savedErrand)
@@ -223,7 +218,7 @@ class MagpieServiceTests {
     @Test
     void deactivateErrand(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,false)
 
         def verdict = service.activate(errand)
 
@@ -236,7 +231,7 @@ class MagpieServiceTests {
     @Test
     void activateErrandWhenActive(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,true)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,true)
 
         def verdict = service.activate(errand)
 
@@ -248,7 +243,7 @@ class MagpieServiceTests {
     @Test
     void activateErrandWhenWeFailToSaveIt(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,false)
 
         def savedErrand = null
         expectValidateAndSave(errand,savedErrand)
@@ -263,7 +258,7 @@ class MagpieServiceTests {
     @Test
     void activateErrand(){
 
-        def errand = generateErrand(ValidName,ValidURL,ValidCronExpression,ValidContentType,false)
+        def errand = generateErrand(DomainTestUtils.ValidErrandName,DomainTestUtils.ValidURL,DomainTestUtils.ValidCronExpression,DomainTestUtils.ValidContentType,false)
 
         def verdict = service.activate(errand)
 

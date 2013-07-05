@@ -1,9 +1,10 @@
 package com.erasmos.grails.magpie_plugin
 
-
-
-import grails.test.mixin.*
-import org.junit.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
+import org.junit.Before
+import org.junit.Test
 
 @TestFor(Fetch)
 @TestMixin([ValidationTestUtils,DomainTestUtils])
@@ -12,12 +13,18 @@ class FetchTests {
 
     def errand
 
+    /**
+     *
+     */
     @Before
     void setUp(){
         errand = generateErrand()
         assertNotNull(errand)
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenNameIsNull() {
 
@@ -29,6 +36,9 @@ class FetchTests {
 
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenHttpStatusCodeIsNull(){
 
@@ -39,6 +49,9 @@ class FetchTests {
         assertFieldError(proposedFetch,'httpStatusCode','nullable')
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeValidEvenWhenContentsIsNull(){
 
@@ -48,7 +61,9 @@ class FetchTests {
         assertFalse(proposedFetch.hasErrors())
     }
 
-
+    /**
+     *
+     */
     @Test
     void shouldBeValid(){
 

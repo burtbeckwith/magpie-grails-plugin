@@ -6,20 +6,26 @@ import org.codehaus.groovy.grails.web.mapping.LinkGenerator
 import org.springframework.http.HttpStatus
 import org.springframework.validation.FieldError
 
+/**
+ *
+ */
 class MagpieRestfulController {
 
-    static final RestfulUrlBase = 'restfulMagpie'
+    private static final RestfulUrlBase = 'restfulMagpie'
 
     MagpieService magpieService
     LinkGenerator grailsLinkGenerator
 
+    /**
+     *
+     * @return
+     */
     def index() {
         render(generateIndexMapForJSON() as JSON)
     }
 
     /**
-     * TODO: DB style sorting (that would work with unit tests)
-     * @return
+     *
      */
     def showAllErrands() {
 
@@ -28,6 +34,9 @@ class MagpieRestfulController {
         render(allErrandsSortedByName as JSON)
     }
 
+    /**
+     *
+     */
     def showErrand(){
 
         def errand = figureRequestedErrand()
@@ -36,6 +45,9 @@ class MagpieRestfulController {
         render(errand as JSON)
     }
 
+    /**
+     *
+     */
     def showFetch(){
 
         def fetch = figureRequestedFetch()
@@ -45,8 +57,7 @@ class MagpieRestfulController {
     }
 
     /**
-     * TODO: DB style sorting (that would work with unit tests)
-     * @return
+     *
      */
     def showAllFetches() {
 
@@ -55,6 +66,9 @@ class MagpieRestfulController {
         render(allFetchesSortedByReverseDate as JSON)
     }
 
+    /**
+     *
+     */
     def showFetchesForErrand(){
 
         def errand = figureRequestedErrand()
@@ -69,7 +83,9 @@ class MagpieRestfulController {
         render(allFetchesForErrandSortedByReverseDate as JSON)
     }
 
-
+    /**
+     *
+     */
     def showContentsForFetch() {
 
         def fetch = figureRequestedFetch()
@@ -78,6 +94,9 @@ class MagpieRestfulController {
         renderContents(fetch)
     }
 
+    /**
+     *
+     */
     def createErrand() {
 
         try {
@@ -91,16 +110,17 @@ class MagpieRestfulController {
             response.status = HttpStatus.BAD_REQUEST.value()
             render(ex.proposedErrand as JSON)
         }
-
     }
 
+    /**
+     *
+     */
     def fetchErrand() {
 
         def errand = figureRequestedErrand()
         if(!errand) return
 
         try {
-
             def newFetch =  magpieService.fetch(errand)
             addLocationHeader(generateLinkToFetch(newFetch.id))
             render(status: HttpStatus.CREATED.value())
@@ -110,6 +130,11 @@ class MagpieRestfulController {
         }
     }
 
+    /**
+     *
+     * @param rawUrl
+     * @return
+     */
     private URL toUrl(final String rawUrl){
         if(!rawUrl) return null
 
@@ -124,12 +149,18 @@ class MagpieRestfulController {
         }
     }
 
-
+    /**
+     *
+     * @param url
+     */
     private void addLocationHeader(final String url){
         response.addHeader('Location',url)
     }
 
-
+    /**
+     *
+     * @return
+     */
     private Errand figureRequestedErrand() {
 
         def errand = params.id ? Errand.read(params.id) : null
@@ -140,6 +171,10 @@ class MagpieRestfulController {
         return errand
     }
 
+    /**
+     *
+     * @return
+     */
     private Fetch figureRequestedFetch() {
 
         def fetch = params.id ? Fetch.read(params.id) : null
@@ -151,7 +186,7 @@ class MagpieRestfulController {
     }
 
     /**
-     * TODO: Seems to be a known bug with Grails (when I used the second method
+     * Seems to be a known bug with Grails (when I used the second method
      * it tries to locate the view)
      *
      * @param fetch
@@ -162,7 +197,6 @@ class MagpieRestfulController {
 
         if(log.isDebugEnabled()) log.debug("We'll render the Fetch's content as: $contentTypeForRendering")
 
-
         if(contentTypeForRendering == 'text/html') {
             render(contentType:contentTypeForRendering, text:fetch.contentsAsString)
         }
@@ -172,6 +206,9 @@ class MagpieRestfulController {
         }
     }
 
+    /**
+     *                                    z
+     */
     void registerJSONMarshallers(){
 
         int marshallerPriority = 0
@@ -181,6 +218,11 @@ class MagpieRestfulController {
         }
     }
 
+    /**
+     *
+     * @param errand
+     * @return
+     */
     private Map asMapForJSON(final Errand errand) {
         assert errand != null
 
@@ -197,7 +239,6 @@ class MagpieRestfulController {
             ]
         }
 
-
         return [
                 id:                                 errand.id,
                 name:                               errand.name,
@@ -212,12 +253,13 @@ class MagpieRestfulController {
                 ]
 
         ]
-
-
-
     }
 
-
+    /**
+     *
+     * @param fetch
+     * @return
+     */
     private Map asMapForJSON(final Fetch fetch) {
         assert fetch != null
 
@@ -237,7 +279,10 @@ class MagpieRestfulController {
         ]
     }
 
-
+    /**
+     *
+     * @return
+     */
     private Map generateIndexMapForJSON(){
 
         return [
@@ -250,16 +295,12 @@ class MagpieRestfulController {
         ]
     }
 
-
-
     /**
-     * TODO: Could render the error code
      *
      * @param fieldError
      * @return
      */
     private Map asMapForJSON(final FieldError fieldError) {
-
         assert fieldError != null
 
         return [
@@ -269,29 +310,57 @@ class MagpieRestfulController {
         ]
     }
 
+    /**
+     *
+     * @param errandId
+     * @return
+     */
     private String generateLinkToFetchesForErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}/fetches"
     }
 
+    /**
+     *
+     * @return
+     */
     private String generateLinkToAllErrands() {
         return "$serverBaseURL/$RestfulUrlBase/errands"
     }
 
+    /**
+     *
+     * @return
+     */
     private String generateLinkToAllFetches() {
         return "$serverBaseURL/$RestfulUrlBase/fetches"
     }
 
+    /**
+     *
+     * @param errandId
+     * @return
+     */
     private String generateLinkToErrand(final Long errandId) {
         assert errandId != null
         return "$serverBaseURL/$RestfulUrlBase/errands/${errandId}"
     }
 
+    /**
+     *
+     * @param fetchId
+     * @return
+     */
     private String generateLinkToFetch(final Long fetchId) {
         assert fetchId != null
         return "$serverBaseURL/$RestfulUrlBase/fetches/${fetchId}"
     }
 
+    /**
+     *
+     * @param fetchId
+     * @return
+     */
     private String generateLinkToFetchContents(final Long fetchId) {
         assert fetchId != null
         return "$serverBaseURL/$RestfulUrlBase/fetches/${fetchId}/contents"
@@ -304,6 +373,4 @@ class MagpieRestfulController {
     private String getServerBaseURL(){
         return grailsLinkGenerator.serverBaseURL
     }
-
-
 }

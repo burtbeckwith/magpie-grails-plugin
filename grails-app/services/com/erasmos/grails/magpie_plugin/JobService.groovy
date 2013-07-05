@@ -4,11 +4,16 @@ import org.quartz.*
 import org.springframework.context.ApplicationContext
 
 /**
- * A thin wrapper for Quartz;
+ * A thin wrapper for Quartz; each Errand is meant to have a single Job,
+ * whose schedule is defined by its cron expression.
+ *
+ * Please note that an Errand's active flag is ignored at this level (a inactive
+ * Errand's Job will still run); however, the actual Fetch will not occur
+ * in MagpieService.
  */
 class JobService {
 
-    public static final ScheduleContextKeyApplicationContext = 'applicationContext'
+    static final ScheduleContextKeyApplicationContext = 'applicationContext'
 
     private static final JobGroupName           = 'Errands'
     private static final JobDataMapKeyErrandId  = 'ErrandId'
@@ -18,11 +23,11 @@ class JobService {
 
     /**
      *
+     *
      * @param errand
-     * @throws JobServiceException
+     * @throws JobServiceException (if a Job by the Errand's name already exists)
      */
     void addJob(final Errand errand) throws JobServiceException {
-
         assert errand !=null
 
         if(log.isDebugEnabled()) log.debug("Adding a new Job for Errand: $errand ... ")
@@ -34,7 +39,6 @@ class JobService {
         }
 
         if(log.isDebugEnabled()) log.debug(" ... job successfully scheduled")
-
     }
 
     /**
@@ -43,7 +47,6 @@ class JobService {
      * @return
      */
     boolean doesJobExist(final String jobName){
-
         assert jobName != null
 
         return quartzScheduler.checkExists(new JobKey(jobName,JobGroupName))
@@ -55,7 +58,6 @@ class JobService {
      * @return
      */
     private JobDetail generateJobDetail(final Errand errand) {
-
         assert errand != null
 
         return JobBuilder.newJob(ErrandJob)
@@ -64,21 +66,31 @@ class JobService {
                 .build()
     }
 
+    /**
+     *
+     * @param errand
+     * @return
+     */
     private Trigger generateTrigger(final Errand errand) {
-
         assert errand != null
 
         return TriggerBuilder.newTrigger()
                 .withIdentity(errand.name, JobGroupName)
                 .withSchedule(CronScheduleBuilder.cronSchedule(errand.cronExpression))
                 .build();
-
     }
 
+    /**
+     *
+     * @param message
+     */
     private void throwServiceException(final String message){
         throw new JobServiceException(message)
     }
 
+    /**
+     *
+     */
     static class JobServiceException extends Exception {
         JobServiceException(final String message){
             super(message)
@@ -97,7 +109,6 @@ class JobService {
 
         @Override
         void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
             assert jobExecutionContext != null
 
             def magpieService =  getMagpieService(jobExecutionContext)
@@ -116,17 +127,26 @@ class JobService {
 
             if(log.isDebugEnabled()) log.debug("About to execute job for Errand: $errand ...")
             magpieService.fetch(errand)
-
         }
 
+        /**
+         *
+         * @param jobExecutionContext
+         * @return
+         */
         private MagpieService getMagpieService(final JobExecutionContext jobExecutionContext){
-
+            assert jobExecutionContext != null
             def applicationContext = (ApplicationContext)jobExecutionContext.scheduler.context.get(ScheduleContextKeyApplicationContext);
             assert applicationContext != null, "ApplicationContext not found in the Scheduler's context"
 
             return applicationContext.getBean(BeanNameMagpieService)
         }
 
+        /**
+         *
+         * @param jobExecutionContext
+         * @return
+         */
         private Long extractErrandId(final JobExecutionContext jobExecutionContext){
             return jobExecutionContext.jobDetail?.jobDataMap?.getLong(JobDataMapKeyErrandId)
         }

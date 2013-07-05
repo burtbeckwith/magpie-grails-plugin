@@ -1,15 +1,16 @@
 package com.erasmos.grails.magpie_plugin
 
-
-
-import grails.test.mixin.*
-import org.junit.*
+import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
+import org.junit.Test
 
 @TestFor(Errand)
 @TestMixin([ValidationTestUtils,DomainTestUtils])
 class ErrandTests {
 
-
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenNameIsNull() {
 
@@ -18,9 +19,11 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'name','nullable')
-
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenNameIsBlank() {
 
@@ -29,9 +32,11 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'name','blank')
-
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenNameHasBeenTaken() {
 
@@ -42,9 +47,11 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'name','unique')
-
     }
 
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenUrlIsNull() {
 
@@ -53,10 +60,11 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'url','nullable')
-
     }
 
-
+    /**
+     *
+     */
     @Test
     void shouldBeInvalidWhenCronExpressionIsNull() {
 
@@ -65,11 +73,10 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'cronExpression','nullable')
-
     }
 
-
-
+    /**
+     */
     @Test
     void shouldBeInvalidWhenCronExpressionIsBlank() {
 
@@ -78,10 +85,11 @@ class ErrandTests {
 
         assertTrue(proposedErrand.hasErrors())
         assertFieldError(proposedErrand,'cronExpression','blank')
-
     }
 
-
+    /**
+     *
+     */
     @Test
     void shouldBeValid() {
 
@@ -94,7 +102,6 @@ class ErrandTests {
         proposedErrand.validate()
 
         assertFalse(proposedErrand.hasErrors())
-
     }
 
 }

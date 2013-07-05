@@ -1,7 +1,6 @@
 About the 'Magpie' Grails Plugin
 =============================
-
-![Console](docs/logo.gif)
+<div style="float: right"><img src="docs/logo.gif" /></div>
 
 This plugin offers scheduled fetching of any http content (via GET), which is then timestamped and persisted; for instance, you may be keeping a list of current exchange rates where you have single URL for each currency pair; or perhaps you want grab a daily weather map.
 

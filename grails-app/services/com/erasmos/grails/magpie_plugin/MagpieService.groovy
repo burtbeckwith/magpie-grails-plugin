@@ -1,5 +1,8 @@
 package com.erasmos.grails.magpie_plugin
 
+/**
+ *
+ */
 class MagpieService {
 
     static transactional = true
@@ -8,6 +11,15 @@ class MagpieService {
     JobService      jobService
     EventService    eventService
 
+    /**
+     *
+     * @param name
+     * @param url
+     * @param cronExpression
+     * @param enforcedContentTypeForRendering (optional)
+     * @return
+     * @throws InvalidProposedErrandException
+     */
     Errand createNewErrand(final String name,final URL url, final String cronExpression, final String enforcedContentTypeForRendering = null) throws InvalidProposedErrandException {
 
         def newErrand = validateAndSave(
@@ -22,12 +34,15 @@ class MagpieService {
         eventService.onNewErrand(newErrand)
 
         return newErrand
-
     }
 
-
+    /**
+     *
+     * @param errand
+     * @return
+     * @throws ErrandNotEligibleForFetch
+     */
     Fetch fetch(final Errand errand) throws ErrandNotEligibleForFetch{
-
         assert errand != null
 
         if(!errand.active) { throw new ErrandNotEligibleForFetch() }
@@ -37,17 +52,17 @@ class MagpieService {
         eventService.onNewFetch(newFetch)
 
         return newFetch
-
     }
 
-
-
+    /**
+     *
+     * @param name
+     * @return
+     */
     Errand findErrandByName(final String name){
-
         assert name != null
 
         return Errand.findByName(name)
-
     }
 
     /**
@@ -56,7 +71,6 @@ class MagpieService {
      * @return Whether it was successful or not.
      */
     boolean deactivate(final Errand errand){
-
         assert errand != null
 
         if(log.isDebugEnabled()) log.debug("Deactivating Errand:$errand ...")
@@ -70,7 +84,6 @@ class MagpieService {
      * @return Whether it was successful or not.
      */
     boolean activate(final Errand errand){
-
         assert errand != null
 
         if(log.isDebugEnabled()) log.debug("Activating Errand:$errand ...")
@@ -78,10 +91,14 @@ class MagpieService {
         return setActive(errand,true)
     }
 
+    /**
+     *
+     * @param errand
+     * @param active
+     * @return
+     */
     boolean setActive(final Errand errand, final boolean active){
-
         assert errand != null
-
 
         if(errand.active==active){
             if(log.isDebugEnabled()) log.debug("... already set")
@@ -101,10 +118,13 @@ class MagpieService {
         return true
     }
 
-
-
+    /**
+     *
+     * @param errand
+     * @param fetchServiceResponse
+     * @return
+     */
     private Fetch createFetch(final Errand errand, final FetchService.Response fetchServiceResponse) {
-
         assert fetchServiceResponse != null
 
         return validateAndSave(
@@ -135,11 +155,10 @@ class MagpieService {
         assert savedErrand != null, "We guarantee to return an Errand (if there's no exception)"
 
         return savedErrand
-
     }
 
     /**
-     * I wouldn't expect this to ever happen, as we only create the Fetch internally
+     * I wouldn't expect this to ever happen, as we only create the Fetch internally.
      *
      * @param proposedFetch
      * @return
@@ -156,9 +175,11 @@ class MagpieService {
         }
 
         return newFetch
-
     }
 
+    /**
+     *
+     */
     static class InvalidProposedErrandException extends Exception {
         Errand proposedErrand
 
@@ -167,18 +188,21 @@ class MagpieService {
         }
     }
 
+    /**
+     *
+     */
     static class InvalidProposedFetchException extends Exception {
         Fetch proposedFetch
 
-        InvalidProposedFetchException(final Errand proposedErrand){
+        InvalidProposedFetchException(final Fetch proposedFetch){
             this.proposedFetch = proposedFetch
         }
     }
 
-
-    static class ErrandNotEligibleForFetch extends Exception {
-
-    }
+    /**
+     *
+     */
+    static class ErrandNotEligibleForFetch extends Exception {}
 
 
 }

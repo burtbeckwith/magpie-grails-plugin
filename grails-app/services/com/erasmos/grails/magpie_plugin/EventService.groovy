@@ -1,12 +1,9 @@
 package com.erasmos.grails.magpie_plugin
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder
-import org.apache.commons.lang.builder.ToStringStyle
 import org.springframework.context.ApplicationEvent
 
 /**
- * The publishEvent method is injected by the spring-events plugin,
- * so is only available when deployed.
+ *
  */
 class EventService {
 
@@ -15,7 +12,6 @@ class EventService {
      * @param fetch
      */
     void onNewFetch(final Fetch fetch) {
-
         assert fetch != null
 
         publish(new NewFetchEvent(fetch))
@@ -27,23 +23,32 @@ class EventService {
      * @param errand
      */
     void onNewErrand(final Errand errand) {
-
         assert errand != null
 
         publish(new NewErrandEvent(errand))
 
     }
 
-
+    /**
+     * The publishEvent method is injected by the spring-events plugin,
+     * so is only available when deployed.
+     *
+     * @param newEvent
+     */
     private void publish(final MagpieEvent newEvent){
-
         assert newEvent != null
 
         publishEvent(newEvent)
     }
 
-    public interface MagpieEvent{}
+    /**
+     * Merely a Marker
+     */
+    interface MagpieEvent{}
 
+    /**
+     *
+     */
     static class NewFetchEvent extends ApplicationEvent implements MagpieEvent{
 
         NewFetchEvent(final Fetch newFetch){
@@ -55,6 +60,9 @@ class EventService {
         }
     }
 
+    /**
+     *
+     */
     static class NewErrandEvent extends ApplicationEvent implements MagpieEvent{
 
         NewErrandEvent(final Errand newErrandEvent){

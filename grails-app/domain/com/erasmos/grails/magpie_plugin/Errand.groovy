@@ -3,6 +3,9 @@ package com.erasmos.grails.magpie_plugin
 import org.apache.commons.lang.builder.ReflectionToStringBuilder
 import org.apache.commons.lang.builder.ToStringStyle
 
+/**
+ * An Errand defines the scheduled task of getting the contents for a specified URL.
+ */
 class Errand {
 
     String  name
@@ -17,11 +20,9 @@ class Errand {
     String enforcedContentTypeForRendering
     Boolean active
 
-
     static constraints = {
         name(nullable: false, blank: false, unique: true)
         url(nullable: false)
-        // TODO: Add custom constraint to ensure valid cron expression (Quartz)
         cronExpression(nullable: false, blank: false)
         enforcedContentTypeForRendering(nullable: true)
         active(nullable: false)

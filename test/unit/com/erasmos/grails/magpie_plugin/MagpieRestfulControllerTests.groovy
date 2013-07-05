@@ -1,22 +1,26 @@
 package com.erasmos.grails.magpie_plugin
 
-
-
-import grails.test.mixin.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.junit.*
+import org.junit.Before
+import org.junit.Test
 
 @TestFor(MagpieRestfulController)
 @TestMixin(DomainTestUtils)
 @Mock([Errand,Fetch])
 class MagpieRestfulControllerTests {
 
-    static String ServerBaseURL     = 'http://localhost:8080/magpie'
-    static String ContentTypeJSON   = 'application/json;charset=UTF-8'
+    private final static String ServerBaseURL     = 'http://localhost:8080/magpie'
+    private final static String ContentTypeJSON   = 'application/json;charset=UTF-8'
 
     def mockControlMagpieService
 
+    /**
+     *
+     */
     @Before
     void setUp() {
 
@@ -28,6 +32,9 @@ class MagpieRestfulControllerTests {
         expectGetServerBaseURL(ServerBaseURL)
     }
 
+    /**
+     *
+     */
     @Test
     void index() {
 
@@ -39,6 +46,9 @@ class MagpieRestfulControllerTests {
         assertTrue(response.json instanceof JSONObject)
     }
 
+    /**
+     *
+     */
     @Test
     void showAllErrandsWhenNoneExist() {
 
@@ -48,7 +58,9 @@ class MagpieRestfulControllerTests {
         assertEquals(ContentTypeJSON,response.contentType)
     }
 
-
+    /**
+     *
+     */
     @Test
     void showAllErrandsWhenSomeExist() {
 
@@ -70,6 +82,9 @@ class MagpieRestfulControllerTests {
         jsonArray.each {assertIsSavedErrand(it)}
     }
 
+    /**
+     *
+     */
     @Test
     void showErrandWhenUnknown(){
 
@@ -85,6 +100,9 @@ class MagpieRestfulControllerTests {
 
     }
 
+    /**
+     *
+     */
     @Test
     void showErrand(){
 
@@ -99,9 +117,11 @@ class MagpieRestfulControllerTests {
         assertNotNull(response.json)
         assertTrue(response.json instanceof JSONObject)
         assertIsSavedErrand(response.json)
-
     }
 
+    /**
+     *
+     */
     @Test
     void showAllFetchesWhenNoneExist() {
 
@@ -111,7 +131,9 @@ class MagpieRestfulControllerTests {
         assertEquals(ContentTypeJSON,response.contentType)
     }
 
-
+    /**
+     *
+     */
     @Test
     void showAllFetchesWhereSomeExist() {
 
@@ -133,6 +155,9 @@ class MagpieRestfulControllerTests {
         assertEquals(fetchFromYesterday.id,jsonArray.get(1)['id'])
     }
 
+    /**
+     *
+     */
     @Test
     void showFetchesForErrandForUnknownErrand() {
 
@@ -147,7 +172,9 @@ class MagpieRestfulControllerTests {
         assertEquals("Unknown Errand: 8888", response.text)
     }
 
-
+    /**
+     *
+     */
     @Test
     void showFetchesForAnErrandWithoutFetches() {
 
@@ -167,7 +194,10 @@ class MagpieRestfulControllerTests {
         assertTrue(jsonArray.empty)
     }
 
-     @Test
+    /**
+     *
+     */
+    @Test
     void showFetchesForAnErrandWithFetches() {
 
         def errand = generateErrand()
@@ -190,6 +220,9 @@ class MagpieRestfulControllerTests {
         assertEquals(fetchFromYesterday.id,jsonArray.get(1)['id'])
     }
 
+    /**
+     *
+     */
     @Test
     void showContentsForFetchWhenUnknown() {
 
@@ -204,6 +237,9 @@ class MagpieRestfulControllerTests {
         assertEquals("Unknown Fetch: 8888", response.text)
     }
 
+    /**
+     *
+     */
     @Test
     void savedErrandAsMapForJSON() {
 
@@ -226,9 +262,11 @@ class MagpieRestfulControllerTests {
         assertEquals(2,links.size())
         assertEquals("http://localhost:8080/magpie/restfulMagpie/errands/${errand.id}/fetches".toString(),links['fetches'])
         assertEquals('http://localhost:8080/magpie/restfulMagpie/errands',links['allErrands'])
-
     }
 
+    /**
+     *
+     */
     @Test
     void errandWithErrorsAsMapForJSON() {
 
@@ -252,6 +290,9 @@ class MagpieRestfulControllerTests {
         }
     }
 
+    /**
+     *
+     */
     @Test
     void fetchAsMapForJSON() {
 
@@ -274,9 +315,11 @@ class MagpieRestfulControllerTests {
         assertEquals(2,links.size())
         assertEquals("http://localhost:8080/magpie/restfulMagpie/errands/${errand.id}".toString(),links['errand'])
         assertEquals("http://localhost:8080/magpie/restfulMagpie/fetches/${fetch.id}/contents".toString(),links['contents'])
-
     }
 
+    /**
+     *
+     */
     @Test
     void generateIndexMapForJSON() {
 
@@ -296,9 +339,11 @@ class MagpieRestfulControllerTests {
         assertEquals(2,links.size())
         assertEquals("http://localhost:8080/magpie/restfulMagpie/errands".toString(),links['allErrands'])
         assertEquals("http://localhost:8080/magpie/restfulMagpie/fetches".toString(),links['allFetches'])
-
     }
 
+    /**
+     *
+     */
     @Test
     void createNewErrandWhenInvalidProposedErrandException(){
 
@@ -326,7 +371,9 @@ class MagpieRestfulControllerTests {
         assertIsErrandWithErrors(response.json)
     }
 
-
+    /**
+     *
+     */
     @Test
     void createNewErrand(){
 
@@ -351,7 +398,9 @@ class MagpieRestfulControllerTests {
         assertLocationHeader("http://localhost:8080/magpie/restfulMagpie/errands/${returnedNewErrand.id}")
     }
 
-
+    /**
+     *
+     */
     @Test
     void fetchErrandWhenUnknown(){
 
@@ -364,9 +413,11 @@ class MagpieRestfulControllerTests {
 
         assertEquals(404,response.status)
         assertEquals("Unknown Errand: 8888", response.text)
-
     }
 
+    /**
+     *
+     */
     @Test
     void fetchErrandWhenNotEligibleForFetch(){
 
@@ -382,9 +433,11 @@ class MagpieRestfulControllerTests {
 
         assertEquals(401,response.status)
         assertEquals("Errand #$id is not eligible for fetching.".toString(), response.text)
-
     }
 
+    /**
+     *
+     */
     @Test
     void fetchErrand(){
 
@@ -404,10 +457,11 @@ class MagpieRestfulControllerTests {
         assertEquals('text/html;charset=utf-8',response.contentType)
         assertEquals('',response.text);
         assertLocationHeader("http://localhost:8080/magpie/restfulMagpie/fetches/${returnedNewFetch.id}")
-
     }
 
-
+    /**
+     *
+     */
     @Test
     void showFetchWhenUnknown(){
 
@@ -420,9 +474,11 @@ class MagpieRestfulControllerTests {
 
         assertEquals(404,response.status)
         assertEquals("Unknown Fetch: 8888", response.text)
-
     }
 
+    /**
+     *
+     */
     @Test
     void showFetch(){
 
@@ -437,9 +493,13 @@ class MagpieRestfulControllerTests {
         assertNotNull(response.json)
         assertTrue(response.json instanceof JSONObject)
         assertIsSavedFetch(response.json)
-
     }
 
+    /**
+     *
+     * @param expectedErrand
+     * @param throwable
+     */
     private void expectFetch(final Errand expectedErrand, final Throwable throwable) {
 
         mockControlMagpieService.demand.fetch {
@@ -450,6 +510,11 @@ class MagpieRestfulControllerTests {
 
     }
 
+    /**
+     *
+     * @param expectedErrand
+     * @param returnedNewFetch
+     */
     private void expectFetch(final Errand expectedErrand, final Fetch returnedNewFetch) {
 
         mockControlMagpieService.demand.fetch {
@@ -460,6 +525,9 @@ class MagpieRestfulControllerTests {
 
     }
 
+    /**
+     *
+     */
     @Test
     void toUrl(){
         assertEquals(new URL('http://www.google.com'),controller.toUrl('http://www.google.com'))
@@ -469,12 +537,18 @@ class MagpieRestfulControllerTests {
         assertNull(controller.toUrl(null))
     }
 
+    /**
+     *
+     * @param expectedLocationUrl
+     */
     private void assertLocationHeader(final String expectedLocationUrl){
         assertEquals(expectedLocationUrl,response.getHeader('Location'))
     }
 
-
-
+    /**
+     *
+     * @param jsonObject
+     */
     private void assertIsSavedErrand(final JSONObject jsonObject) {
 
         assertNotNull(jsonObject.get('id'))
@@ -484,9 +558,12 @@ class MagpieRestfulControllerTests {
         assertNotNull(jsonObject.get('cronExpression'))
         assertNotNull(jsonObject.get('url'))
         assertNotNull(jsonObject.get('enforcedContentTypeForRendering'))
-
     }
 
+    /**
+     *
+     * @param jsonObject
+     */
     private void assertIsSavedFetch(final JSONObject jsonObject) {
 
         assertNotNull(jsonObject.get('id'))
@@ -498,9 +575,12 @@ class MagpieRestfulControllerTests {
         assertNotNull(jsonObject.get('contentType'))
         assertNotNull(jsonObject.get('contentSize'))
         assertNotNull(jsonObject.get('links'))
-
     }
 
+    /**
+     *
+     * @param jsonObject
+     */
     private void assertIsErrandWithErrors(final JSONObject jsonObject) {
 
         assertNotNull(jsonObject.get('name'))
@@ -508,10 +588,16 @@ class MagpieRestfulControllerTests {
         assertNotNull(jsonObject.get('url'))
         assertNotNull(jsonObject.get('enforcedContentTypeForRendering'))
         assertNotNull(jsonObject.get('fieldErrors'))
-
-
     }
 
+    /**
+     *
+     * @param expectedName
+     * @param expectedUrl
+     * @param expectedCronExpression
+     * @param expectedEnforcedContentTypeForRendering
+     * @param returnedErrand
+     */
     private void expectCreateNewErrand(final String expectedName, final URL expectedUrl, final String expectedCronExpression, final String expectedEnforcedContentTypeForRendering, final Errand returnedErrand) {
 
         mockControlMagpieService.demand.createNewErrand {
@@ -526,11 +612,17 @@ class MagpieRestfulControllerTests {
                 assertEquals(expectedEnforcedContentTypeForRendering,_enforcedContentTypeForRendering)
 
                 return returnedErrand
-
         }
     }
 
-
+    /**
+     *
+     * @param expectedName
+     * @param expectedUrl
+     * @param expectedCronExpression
+     * @param expectedEnforcedContentTypeForRendering
+     * @param thrown
+     */
     private void expectCreateNewErrand(final String expectedName, final URL expectedUrl, final String expectedCronExpression, final String expectedEnforcedContentTypeForRendering, final Throwable thrown) {
 
         mockControlMagpieService.demand.createNewErrand {
@@ -545,7 +637,6 @@ class MagpieRestfulControllerTests {
                 assertEquals(expectedEnforcedContentTypeForRendering,_enforcedContentTypeForRendering)
 
                 throw thrown
-
         }
     }
 

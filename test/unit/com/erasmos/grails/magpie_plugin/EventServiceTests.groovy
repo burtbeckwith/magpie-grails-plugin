@@ -1,17 +1,18 @@
 package com.erasmos.grails.magpie_plugin
 
-
-
-import grails.test.mixin.*
-import org.junit.*
+import grails.test.mixin.TestFor
+import org.junit.Test
 import org.springframework.context.ApplicationEvent
 
 /**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
+ *
  */
 @TestFor(EventService)
 class EventServiceTests {
 
+    /**
+     *
+     */
     @Test
     void onNewFetch(){
 
@@ -20,12 +21,12 @@ class EventServiceTests {
         expectPublishEventForNewFetch(fetch)
 
         service.onNewFetch(fetch)
-
     }
 
-
-
-     @Test
+    /**
+     *
+     */
+    @Test
     void onNewErrand(){
 
         def errand = new Errand()
@@ -35,11 +36,18 @@ class EventServiceTests {
         service.onNewErrand(errand)
     }
 
-
+    /**
+     *
+     * @param expectedFetch
+     */
     private void expectPublishEventForNewFetch(final Fetch expectedFetch){
         expectPublishEvent(EventService.NewFetchEvent,expectedFetch)
     }
 
+    /**
+     *
+     * @param expectedErrand
+     */
     private void expectPublishEventForNewErrand(final Errand expectedErrand){
         expectPublishEvent(EventService.NewErrandEvent,expectedErrand)
     }

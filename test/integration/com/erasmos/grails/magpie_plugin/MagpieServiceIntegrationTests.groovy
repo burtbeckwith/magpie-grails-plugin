@@ -1,16 +1,14 @@
 package com.erasmos.grails.magpie_plugin
 
-import org.junit.Before
 import org.junit.Test
 
+/**
+ * An integration test, as I'm actually fetching the Errand's content.
+ */
 class MagpieServiceIntegrationTests extends GroovyTestCase {
 
-
-
-    static final ValidCronExpression    = '0 0 12 1/1 * ? *'
-    static final ValidContentType       = 'application/json'
-
-    static final UseLocalProxy = false
+    private static final ValidCronExpression    = '0 0 12 1/1 * ? *'
+    private static final ValidContentType       = 'application/json'
 
     MagpieService   magpieService
     JobService      jobService
@@ -20,12 +18,9 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
      */
     DefaultEventListenerService defaultEventListenerService
 
-
-    @Before
-    void setUp() {
-        magpieService.fetchService.useLocalProxy = UseLocalProxy
-    }
-
+    /**
+     *
+     */
     @Test
     void createNewErrand() {
 
@@ -52,9 +47,7 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
 
         assertEquals(numberOfNewErrandEventsBefore+1,numberOfNewErrandEventsAfter)
 
-
         assertTrue(jobService.doesJobExist(name))
-
     }
 
     /**
@@ -78,6 +71,11 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         assertEquals(numberOfNewFetchEventsBefore+1,numberOfNewFetchEventsAfter)
     }
 
+    /**
+     *
+     * @param eventClass
+     * @return
+     */
     private int getInitialNumberOfSuchEvents(final Class<EventService.MagpieEvent> eventClass) {
         return defaultEventListenerService.getEventTypeCount(eventClass)
     }
@@ -94,6 +92,9 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         return defaultEventListenerService.getEventTypeCount(eventClass)
     }
 
+    /**
+     *
+     */
     @Test
     void fetchErrandForCurrencyRateCADAndGBP(){
 
@@ -112,6 +113,9 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         assertEquals(numberOfNewFetchEventsBefore+1,numberOfNewFetchEventsAfter)
     }
 
+    /**
+     *
+     */
     @Test
     void fetchErrandForURLForUnknownSite(){
 
@@ -127,7 +131,13 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
         assertEquals(numberOfNewFetchEventsBefore+1,numberOfNewFetchEventsAfter)
     }
 
-
+    /**
+     *
+     * @param fromCurrencySymbol
+     * @param toCurrencySymbol
+     * @param active
+     * @return
+     */
     private Errand generateCurrencyRelatedErrand(final String fromCurrencySymbol, final String toCurrencySymbol, final boolean active = true) {
 
         return new Errand(  name:"Currency ($fromCurrencySymbol -> $toCurrencySymbol)",
@@ -137,6 +147,12 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
                             ).save(failOnError: true)
     }
 
+    /**
+     *
+     * @param url
+     * @param active
+     * @return
+     */
     private Errand generateErrand(final URL url, final boolean active = true) {
 
         return new Errand(
@@ -148,7 +164,7 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
     }
 
     /**
-     * curl "http://download.finance.yahoo.com/d/quotes.cvs?s=GBPCAD=X&f=sl1d1t1ba&e=.csv"
+     * Example: curl "http://download.finance.yahoo.com/d/quotes.cvs?s=GBPCAD=X&f=sl1d1t1ba&e=.csv"
      *
      * @param fromCurrencySymbol
      * @param toCurrencySymbol
@@ -157,6 +173,4 @@ class MagpieServiceIntegrationTests extends GroovyTestCase {
     private URL generateCurrencyRelatedUrl(final String fromCurrencySymbol, final String toCurrencySymbol){
         return new URL("http://download.finance.yahoo.com/d/quotes.cvs?s=${fromCurrencySymbol}${toCurrencySymbol}=X&f=sl1d1t1ba&e=.csv")
     }
-
-
 }
